@@ -1,0 +1,80 @@
+package com.example.nhom9.musicplayer.Fragment;
+
+import android.Manifest;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.example.nhom9.musicplayer.Activity.Activity_play_nhac;
+import com.example.nhom9.musicplayer.Adapter.PlayNhacAdapter;
+import com.example.nhom9.musicplayer.DatabaseAccess.BaiHatService;
+import com.example.nhom9.musicplayer.DatabaseAccess.QuetBaiHatService;
+import com.example.nhom9.musicplayer.Model.BaiHat;
+import com.example.nhom9.musicplayer.R;
+
+import static android.content.Context.MODE_PRIVATE;
+
+
+public class Fragment_List_BaiHat extends Fragment {
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment__list__bai_hat, container, false);
+        loadData(view);
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+        }
+        else {
+            loadData(view);
+        }
+        return view;
+    }
+    private void loadData(View view) {
+        SharedPreferences ref = getContext().getSharedPreferences("com.example.nhom9.musicplayer.Activity", MODE_PRIVATE);
+        if (ref.getBoolean("first-run", true)) {
+            try {
+                QuetBaiHatService quetBaiHatService = new QuetBaiHatService(getContext());
+                quetBaiHatService.scanAndSave();
+                ref.edit().putBoolean("first-run", false).apply();
+                loadData(view);
+            } catch (Exception ignored) {
+            }
+        } else {
+            RecyclerView rclbaiHat = view.findViewById(R.id.recycler_play_baihat);
+            rclbaiHat.setLayoutManager(new LinearLayoutManager(getContext()));
+            rclbaiHat.setHasFixedSize(true);
+
+            try {
+                BaiHatService baiHatService = new BaiHatService(getContext());
+
+                PlayNhacAdapter adapter = new PlayNhacAdapter(getContext(), baiHatService.layDanhSachBaiHat());
+
+                adapter.setOnItemClickListener(new PlayNhacAdapter.ItemClickListener() {
+                    @Override
+                    public void onClick(View view, BaiHat baiHat, int pos) {
+                        Intent intent = new Intent(getContext(), Activity_play_nhac.class);
+                        intent.putExtra("song", baiHat);
+
+                        startActivity(intent);
+                    }
+                });
+                rclbaiHat.setAdapter(adapter);
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+
+}

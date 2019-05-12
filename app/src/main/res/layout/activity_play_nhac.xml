@@ -69,6 +69,7 @@
                 android:layout_marginRight="15dp"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:tag="0"
                 android:id="@+id/btn_ngaunhien"/>
             <ImageButton
                 android:src="@drawable/iconpreview"

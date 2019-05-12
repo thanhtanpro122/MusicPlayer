@@ -21,6 +21,7 @@ import com.example.nhom9.musicplayer.R;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Activity_play_nhac extends AppCompatActivity {
 
@@ -69,7 +70,6 @@ public class Activity_play_nhac extends AppCompatActivity {
             }
         });
         XuLyCacNut();
-
     }
     private void XuLyCacNut(){
         KhoiTaoMediaPlayer();
@@ -145,6 +145,21 @@ public class Activity_play_nhac extends AppCompatActivity {
 
             }
         });
+
+        btnRandom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (btnRandom.getTag().equals('0')){
+                    btnRandom.setImageResource(R.drawable.iconshuffled);
+                    btnRandom.setTag('1');
+                }
+                else {
+                    btnRandom.setImageResource(R.drawable.iconsuffle);
+                    btnRandom.setTag('0');
+                }
+            }
+        });
+
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -162,11 +177,28 @@ public class Activity_play_nhac extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onDestroy() {
+        if(mediaPlayer!=null){
+            if(mediaPlayer.isPlaying()){
+                mediaPlayer.stop();
+            }
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+        super.onDestroy();
+    }
+
     private void UpdateTimeSong() {
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                if (mediaPlayer == null) {
+                    return;
+                }
+
                 SimpleDateFormat dinhDangGio = new SimpleDateFormat("mm:ss");
                 txtTime.setText(dinhDangGio.format(mediaPlayer.getCurrentPosition()));
 
@@ -176,13 +208,29 @@ public class Activity_play_nhac extends AppCompatActivity {
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
+                        if (mediaPlayer.isLooping()) {
+                            return;
+                        }
+
                         position++;
                         if (position > arraySongs.size() - 1) {
                             position = 0;
                         }
+
+                        if (btnRandom.getTag().equals("1")) {
+                            Random random = new Random();
+                            position = random.nextInt(arraySongs.size());
+                        }
+
+                        baiHat = arraySongs.get(position);
                         mediaPlayer.stop();
                         mediaPlayer.release();
+
                         KhoiTaoMediaPlayer();
+//                        if (btnRepeat.getTag().equals('1')){
+//                            btnRepeat.setImageResource(R.drawable.iconrepeat);
+//                            btnRepeat.setTag('0');
+//                        }
                         btnPlay.setImageResource(R.drawable.iconpause);
                         SetTimeTotal();
                         mediaPlayer.start();
@@ -204,7 +252,7 @@ public class Activity_play_nhac extends AppCompatActivity {
 
     private void KhoiTaoMediaPlayer() {
         mediaPlayer = MediaPlayer.create(Activity_play_nhac.this, Uri.parse(baiHat.getUrlBaiHat()));
-
+        getSupportActionBar().setTitle(baiHat.getTenBaiHat());
     }
 
     private void AddSong() {

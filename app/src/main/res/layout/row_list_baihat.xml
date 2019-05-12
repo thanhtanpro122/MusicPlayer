@@ -38,5 +38,14 @@
             android:id="@+id/txt_play_nhac_ten_casi"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
+        <!--<ImageView-->
+            <!--android:src="@drawable/iconlove"-->
+            <!--android:layout_marginRight="5dp"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_alignParentRight="true"-->
+            <!--android:id="@+id/img_luot_thich_bai_hat"-->
+            <!--android:layout_width="30dp"-->
+            <!--android:layout_height="30dp" />-->
     </RelativeLayout>
 </RelativeLayout>

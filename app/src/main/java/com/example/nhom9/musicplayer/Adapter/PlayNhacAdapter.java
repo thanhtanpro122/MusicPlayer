@@ -38,9 +38,14 @@ public class PlayNhacAdapter extends RecyclerView.Adapter<PlayNhacAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.row_list_baihat, viewGroup, false);
-        return new ViewHolder(view);
+        try{
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View view = inflater.inflate(R.layout.row_list_baihat, viewGroup, false);
+            return new ViewHolder(view);
+        }catch (Exception e){
+            e.getMessage();
+        }
+        return null;
     }
 
     @Override
