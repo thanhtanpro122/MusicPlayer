@@ -16,7 +16,7 @@ public class QuetBaiHatService extends DbHelper {
     private static ArrayList<String> MEDIA_PATHs = new ArrayList<>();
 
     static {
-        MEDIA_PATHs.add(Environment.getExternalStorageDirectory().getPath() + "/Music/");
+        MEDIA_PATHs.add(Environment.getExternalStorageDirectory().getPath()+ "/Music/");
 
         File[] fileList = new File("/storage/").listFiles();
         for (File file : fileList) {

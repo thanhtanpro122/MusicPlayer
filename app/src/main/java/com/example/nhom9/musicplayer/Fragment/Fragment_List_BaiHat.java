@@ -32,26 +32,17 @@ public class Fragment_List_BaiHat extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment__list__bai_hat, container, false);
         loadData(view);
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-        }
-        else {
-            loadData(view);
-        }
+//        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+//                != PackageManager.PERMISSION_GRANTED) {
+//            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+//        }
+//        else {
+//            loadData(view);
+//        }
         return view;
     }
     private void loadData(View view) {
-        SharedPreferences ref = getContext().getSharedPreferences("com.example.nhom9.musicplayer.Activity", MODE_PRIVATE);
-        if (ref.getBoolean("first-run", true)) {
-            try {
-                QuetBaiHatService quetBaiHatService = new QuetBaiHatService(getContext());
-                quetBaiHatService.scanAndSave();
-                ref.edit().putBoolean("first-run", false).apply();
-                loadData(view);
-            } catch (Exception ignored) {
-            }
-        } else {
+
             RecyclerView rclbaiHat = view.findViewById(R.id.recycler_play_baihat);
             rclbaiHat.setLayoutManager(new LinearLayoutManager(getContext()));
             rclbaiHat.setHasFixedSize(true);
@@ -73,7 +64,7 @@ public class Fragment_List_BaiHat extends Fragment {
                 rclbaiHat.setAdapter(adapter);
             } catch (Exception ignored) {
             }
-        }
+
     }
 
 
