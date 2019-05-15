@@ -3,6 +3,7 @@ package com.example.nhom9.musicplayer.Fragment;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,12 +14,16 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
+import com.example.nhom9.musicplayer.Activity.Activity_play_nhac;
 import com.example.nhom9.musicplayer.Adapter.PlayListAdapter;
+import com.example.nhom9.musicplayer.Adapter.PlayNhacAdapter;
 import com.example.nhom9.musicplayer.DatabaseAccess.PlayListService;
+import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.Model.PlayList;
 import com.example.nhom9.musicplayer.R;
 import com.example.nhom9.musicplayer.utils.Tools;
@@ -42,11 +47,14 @@ public class Fragment_PlayList extends Fragment {
         View root = inflater.inflate(R.layout.fragment__play_list, container, false);
 
         RecyclerView recyclerView = root.findViewById(R.id.rcl_playlist);
+
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             recyclerView.addItemDecoration(new SpacingItemDecoration(2,
                     Tools.dpToPx(Objects.requireNonNull(getContext()), 4), true));
         }
+
         recyclerView.setHasFixedSize(true);
 
         FloatingActionButton fabAddPlaylist = root.findViewById(R.id.fab_add_playlist);
@@ -64,6 +72,50 @@ public class Fragment_PlayList extends Fragment {
 
 
         return root;
+    }
+
+    private void init(){
+        adapter.setOnItemClickListener(new PlayListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, PlayList playList, int position) {
+
+            }
+
+//            @Override
+//            public void onClick(View view, BaiHat baiHat, int pos) {
+//                Intent intent = new Intent(getContext(), Activity_play_nhac.class);
+//                intent.putExtra("song", baiHat);
+//
+//                startActivity(intent);
+//            }
+        });
+        adapter.setOnMoreItemClick(new PlayListAdapter.OnMoreItemClickListener() {
+            @Override
+            public void onMoreItemClick(View view, PlayList playList, MenuItem item) {
+
+            }
+
+//            @Override
+//            public void onMoreItemClick(View view, BaiHat song, MenuItem item) {
+//                switch (item.getItemId()) {
+//                    case R.id.menu_item_play:
+//                        Intent intent = new Intent(getContext(), Activity_play_nhac.class);
+//                        intent.putExtra("song", song);
+//
+//                        startActivity(intent);
+//                        break;
+//                    case R.id.menu_item_them_playlist:
+//                        // showPopup();
+//                        break;
+//                    case R.id.menu_item_rename:
+//
+//                        break;
+//                    case R.id.menu_item_delete:
+//
+//                        break;
+//                }
+//            }
+        });
     }
 
     private void fabAddPlaylistOnClick(View view) {
@@ -86,11 +138,11 @@ public class Fragment_PlayList extends Fragment {
         dialogBuilder.show();
     }
 
-    private void dialogOnPositiveButtonClick(DialogInterface dialogInterface, int i) {
+    private void dialogOnNegativeButtonClick(DialogInterface dialogInterface, int i) {
         dialogInterface.dismiss();
     }
 
-    private void dialogOnNegativeButtonClick(DialogInterface dialogInterface, int i) {
+    private void dialogOnPositiveButtonClick(DialogInterface dialogInterface, int i) {
         String title = edtTitle.getText().toString().trim();
         if (title.isEmpty()) {
             tilTitle.setError("The title cannot be empty");

@@ -33,10 +33,9 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.PlayLi
           this.playLists=playLists;
           inflater = LayoutInflater.from(context);
     }
-    public void setOnItemClick(OnItemClickListener onItemClick) {
-        this.onItemClick = onItemClick;
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClick = onItemClickListener;
     }
-
     public void setOnMoreItemClick(OnMoreItemClickListener onMoreItemClick) {
         this.onMoreItemClick = onMoreItemClick;
     }
@@ -106,6 +105,7 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.PlayLi
 
         }
     }
+
     public interface OnItemClickListener {
         void onItemClick(View view, PlayList playList, int position);
     }
