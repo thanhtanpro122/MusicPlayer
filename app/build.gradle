@@ -4,7 +4,7 @@ android {
     compileSdkVersion 26
     defaultConfig {
         applicationId "com.example.nhom9.musicplayer"
-        minSdkVersion 15
+        minSdkVersion 22
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -40,4 +40,6 @@ dependencies {
     implementation 'com.balysv:material-ripple:1.0.2'
     implementation 'com.mikhaellopez:circularimageview:3.2.0'
     implementation 'com.github.bumptech.glide:glide:3.7.0'
+
+    implementation group: 'com.google.code.gson', name: 'gson', version: '2.7', changing: true
 }
