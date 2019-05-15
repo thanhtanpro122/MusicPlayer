@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.nhom9.musicplayer.DatabaseAccess.BaiHatService;
+import com.example.nhom9.musicplayer.Fragment.Fragment_List_BaiHat;
 import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.R;
 import com.example.nhom9.musicplayer.Service.MediaPlayerService;
@@ -39,11 +41,13 @@ public class Activity_play_nhac extends AppCompatActivity {
     TextView txtTime, txtTotalTime;
     SeekBar seekBar;
     ImageButton btnRandom, btnPreview, btnPlay, btnNext, btnRepeat;
-    static BaiHat baiHat;
+
+    public static BaiHat baiHat;
+    public int indexBaiHat;
 
     ArrayList<BaiHat> arraySongs;
 
-    int position = 0;
+//    int position = 0;
 //    static MediaPlayer mediaPlayer;
 
     Animation animation;
@@ -54,6 +58,10 @@ public class Activity_play_nhac extends AppCompatActivity {
         setContentView(R.layout.activity_play_nhac);
         AnhXa();
         AddSong();
+
+        if (savedInstanceState != null) {
+            onRestoreInstanceState(savedInstanceState);
+        }
 
         animation = AnimationUtils.loadAnimation(this, R.anim.disc_routate);
 
@@ -66,15 +74,41 @@ public class Activity_play_nhac extends AppCompatActivity {
         toolbar_play_nhac.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+                Intent intent = new Intent(getApplicationContext(), Activity_trang_chu.class);
+                startActivity(intent);
             }
         });
 //        XuLyCacNut();
 //        SetTimeTotal();
 //        UpdateTimeSong();
+
+        baiHat = Fragment_List_BaiHat.selectedSong;
+
         setUpService();
+        XuLyCacNut();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(player!= null){
+            baiHat = Fragment_List_BaiHat.selectedSong;
+            if (!player.isCurrentSong(baiHat)) {
+                indexBaiHat = player.setSongIndex(baiHat.getIdBaiHat());
+            }
+        }
+
+        Log.i("Activity_play_nhac","OnStart");
+    }
+//
+//    @Override
+//    protected void onRestart() {
+//        baiHat = (BaiHat) getIntent().getSerializableExtra("song");
+//        if (!player.isCurrentSong(baiHat)) {
+//            indexBaiHat = player.setSongIndex(baiHat.getIdBaiHat());
+//        }
+//        super.onRestart();
+//    }
 
     private void setUpService(){
         //Check is service is active
@@ -83,7 +117,6 @@ public class Activity_play_nhac extends AppCompatActivity {
             startService(playerIntent);
             bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
         } else {
-
             //Service is active
             //Send a broadcast to the service -> PLAY_NEW_AUDIO
             Intent broadcastIntent = new Intent(Broadcast_PLAY_NEW_AUDIO);
@@ -137,33 +170,31 @@ public class Activity_play_nhac extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        if (serviceBound) {
-//            unbindService(serviceConnection);
-//            //service is active
-//            player.stopSelf();
-//        }
+        if (serviceBound) {
+            unbindService(serviceConnection);
+            //service is active
+            player.stopSelf();
+        }
     }
 
-//    private void XuLyCacNut(){
-//        KhoiTaoMediaPlayer();
-//
-//        btnPlay.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (mediaPlayer.isPlaying()) {
-//                    // nếu đang hát
+    private void XuLyCacNut(){
+        btnPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (player.btnPlayStopClick()) {
+                    // nếu đang hát
 //                    mediaPlayer.pause();
-//                    btnPlay.setImageResource(R.drawable.iconplay);
-//                } else {
+                    btnPlay.setImageResource(R.drawable.iconplay);
+                } else {
 //                    mediaPlayer.start();
-//                    btnPlay.setImageResource(R.drawable.iconpause);
-//                }
-//                SetTimeTotal();
+                    btnPlay.setImageResource(R.drawable.iconpause);
+                }
+                SetTimeTotal();
 //                UpdateTimeSong();
-//            }
-//        });
-//
-//
+            }
+        });
+
+
 //        btnNext.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
@@ -249,7 +280,7 @@ public class Activity_play_nhac extends AppCompatActivity {
 //                mediaPlayer.seekTo(seekBar.getProgress());
 //            }
 //        });
-//    }
+    }
 
 //    private void UpdateTimeSong() {
 //        final Handler handler = new Handler();
@@ -306,14 +337,14 @@ public class Activity_play_nhac extends AppCompatActivity {
 //            }
 //        }, 100);
 //    }
-//
-//    private void SetTimeTotal() {
-//        SimpleDateFormat dinhDanggio = new SimpleDateFormat("mm:ss");
-//        txtTotalTime.setText(dinhDanggio.format(mediaPlayer.getDuration()));
-//        //Gán max của skSong = thoi gian phát
-//        seekBar.setMax(mediaPlayer.getDuration());
-//    }
-//
+
+    private void SetTimeTotal() {
+        SimpleDateFormat dinhDanggio = new SimpleDateFormat("mm:ss");
+        txtTotalTime.setText(dinhDanggio.format(player.getDuration()));
+        //Gán max của skSong = thoi gian phát
+        seekBar.setMax(player.getDuration());
+    }
+
 //    private void KhoiTaoMediaPlayer() {
 //        if (mediaPlayer != null) {
 //            BaiHat song = (BaiHat) getIntent().getSerializableExtra("song");

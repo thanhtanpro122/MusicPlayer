@@ -63,7 +63,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     //path to the audio file
     private String mediaFile;
     //Used to pause/resume MediaPlayer
-    private int resumePosition;
+    private int resumePosition = 0;
 
     private AudioManager audioManager;
 
@@ -190,6 +190,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             mediaPlayer.start();
         }
     }
+
+
 
     /**
      *
@@ -379,7 +381,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         public void onReceive(Context context, Intent intent) {
 
             //Get the new media index form SharedPreferences
-            baihatIndex = 0;
+//            baihatIndex = 0;
+            baihatIndex = getSongIndex(Activity_play_nhac.baiHat.getIdBaiHat());
             if (baihatIndex != -1 && baihatIndex < listBaiHat.size()) {
                 //index is in a valid range
                 activeBaiHat = listBaiHat.get(baihatIndex);
@@ -642,12 +645,13 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 //            StorageUtil storage = new StorageUtil(getApplicationContext());
 //            audioList = storage.loadAudio();
 //            audioIndex = storage.loadAudioIndex();
-            baihatIndex = 0;
+
+
             try{
                 BaiHatService service = new BaiHatService(getApplicationContext());
                 listBaiHat = service.layDanhSachBaiHat();
             }catch (Exception ignore){}
-
+            baihatIndex = getSongIndex(Activity_play_nhac.baiHat.getIdBaiHat());
 
             if (baihatIndex != -1 && baihatIndex < listBaiHat.size()) {
                 //index is in a valid range
@@ -698,6 +702,50 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 //            initMediaPlayer();
 //
 //        return super.onStartCommand(intent, flags, startId);
+    }
+
+    public boolean btnPlayStopClick(){
+        if(mediaPlayer.isPlaying()){
+            pauseMedia();
+            return true;
+        }else{
+            resumeMedia();
+            return false;
+        }
+    }
+
+    public int getDuration(){
+        return mediaPlayer.getDuration();
+    }
+
+    public int getSongIndex(int id){
+        for(int i = 0;i<listBaiHat.size();i++) {
+            if (id == listBaiHat.get(i).getIdBaiHat()) {
+                activeBaiHat = listBaiHat.get(i);
+                baihatIndex = i;
+            }
+        }
+        return baihatIndex;
+    }
+
+    public boolean isCurrentSong(BaiHat song){
+        return song.getIdBaiHat() == activeBaiHat.getIdBaiHat();
+    }
+
+    public int setSongIndex(int id){
+        for(int i = 0;i<listBaiHat.size();i++) {
+            if (id == listBaiHat.get(i).getIdBaiHat()) {
+                activeBaiHat = listBaiHat.get(i);
+                baihatIndex = i;
+            }
+        }
+        stopMedia();
+        //reset mediaPlayer
+        mediaPlayer.reset();
+        initMediaPlayer();
+        updateMetaData();
+        buildNotification(PlaybackStatus.PLAYING);
+        return baihatIndex;
     }
 
 

@@ -41,6 +41,9 @@ public class Fragment_List_BaiHat extends Fragment {
     BaiHatService baiHatService;
     private ArrayList<BaiHat> baiHats;
     PlayNhacAdapter adapter;
+
+    public static BaiHat selectedSong;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -79,9 +82,8 @@ public class Fragment_List_BaiHat extends Fragment {
                 adapter.setOnItemClickListener(new PlayNhacAdapter.ItemClickListener() {
                     @Override
                     public void onClick(View view, BaiHat baiHat, int pos) {
+                        selectedSong = baiHat;
                         Intent intent = new Intent(getContext(), Activity_play_nhac.class);
-                        intent.putExtra("song", baiHat);
-
                         startActivity(intent);
                     }
                 });
