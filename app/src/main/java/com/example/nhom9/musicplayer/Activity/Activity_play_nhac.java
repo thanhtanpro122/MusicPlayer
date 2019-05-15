@@ -28,18 +28,15 @@ public class Activity_play_nhac extends AppCompatActivity {
     TextView txtTime, txtTotalTime;
     SeekBar seekBar;
     ImageButton btnRandom, btnPreview, btnPlay, btnNext, btnRepeat;
-    BaiHat baiHat;
+    static BaiHat baiHat;
 
     ArrayList<BaiHat> arraySongs;
 
     int position = 0;
-    MediaPlayer mediaPlayer;
+    static MediaPlayer mediaPlayer;
 
     Animation animation;
 
-    boolean repeat = false;
-    boolean checkrandom = false;
-    boolean next = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,19 +46,11 @@ public class Activity_play_nhac extends AppCompatActivity {
 
         animation = AnimationUtils.loadAnimation(this, R.anim.disc_routate);
 
-        baiHat = (BaiHat) getIntent().getSerializableExtra("song");
 
-        for (int i = 0; i < arraySongs.size(); i++) {
-            if (arraySongs.get(i).getIdBaiHat() == baiHat.getIdBaiHat()) {
-                position = i;
-                break;
-            }
-        }
         Toolbar toolbar_play_nhac = findViewById(R.id.toolbar_play_nhac);
         setSupportActionBar(toolbar_play_nhac);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(baiHat.getTenBaiHat());
 
         toolbar_play_nhac.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,6 +59,8 @@ public class Activity_play_nhac extends AppCompatActivity {
             }
         });
         XuLyCacNut();
+        SetTimeTotal();
+        UpdateTimeSong();
     }
     private void XuLyCacNut(){
         KhoiTaoMediaPlayer();
@@ -178,18 +169,6 @@ public class Activity_play_nhac extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        if(mediaPlayer!=null){
-            if(mediaPlayer.isPlaying()){
-                mediaPlayer.stop();
-            }
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
-        super.onDestroy();
-    }
-
     private void UpdateTimeSong() {
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -213,15 +192,18 @@ public class Activity_play_nhac extends AppCompatActivity {
                         }
 
                         position++;
+                        //Ktra pos có vượt size arraySong
                         if (position > arraySongs.size() - 1) {
                             position = 0;
                         }
 
+                        //Random
                         if (btnRandom.getTag().equals("1")) {
                             Random random = new Random();
                             position = random.nextInt(arraySongs.size());
                         }
 
+                        //Gan bài hát bằng array(pos)
                         baiHat = arraySongs.get(position);
                         mediaPlayer.stop();
                         mediaPlayer.release();
@@ -251,8 +233,52 @@ public class Activity_play_nhac extends AppCompatActivity {
     }
 
     private void KhoiTaoMediaPlayer() {
-        mediaPlayer = MediaPlayer.create(Activity_play_nhac.this, Uri.parse(baiHat.getUrlBaiHat()));
-        getSupportActionBar().setTitle(baiHat.getTenBaiHat());
+        if (mediaPlayer != null) {
+            BaiHat song = (BaiHat) getIntent().getSerializableExtra("song");
+            if (!mediaPlayer.isPlaying()) {
+                baiHat = song;
+
+                for (int i = 0; i < arraySongs.size(); i++) {
+                    if (arraySongs.get(i).getIdBaiHat() == baiHat.getIdBaiHat()) {
+                        position = i;
+                        break;
+                    }
+                }
+                mediaPlayer.release();
+                mediaPlayer = MediaPlayer.create(Activity_play_nhac.this, Uri.parse(baiHat.getUrlBaiHat()));
+                mediaPlayer.start();
+                getSupportActionBar().setTitle(baiHat.getTenBaiHat());
+            } else {
+                if (baiHat.getIdBaiHat() != song.getIdBaiHat()) {
+                    baiHat = song;
+
+                    for (int i = 0; i < arraySongs.size(); i++) {
+                        if (arraySongs.get(i).getIdBaiHat() == baiHat.getIdBaiHat()) {
+                            position = i;
+                            break;
+                        }
+                    }
+                    mediaPlayer.release();
+                    mediaPlayer = MediaPlayer.create(Activity_play_nhac.this, Uri.parse(baiHat.getUrlBaiHat()));
+                    mediaPlayer.start();
+                    getSupportActionBar().setTitle(baiHat.getTenBaiHat());
+                } else {
+                    getSupportActionBar().setTitle(baiHat.getTenBaiHat());
+                }
+            }
+        } else {
+            baiHat = (BaiHat) getIntent().getSerializableExtra("song");
+
+            for (int i = 0; i < arraySongs.size(); i++) {
+                if (arraySongs.get(i).getIdBaiHat() == baiHat.getIdBaiHat()) {
+                    position = i;
+                    break;
+                }
+            }
+            mediaPlayer = MediaPlayer.create(Activity_play_nhac.this, Uri.parse(baiHat.getUrlBaiHat()));
+            mediaPlayer.start();
+            getSupportActionBar().setTitle(baiHat.getTenBaiHat());
+        }
     }
 
     private void AddSong() {

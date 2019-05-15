@@ -28,10 +28,30 @@ public class BaiHatService extends DbHelper {
             baiHat.setIdCasi(cursor.getInt(2));
             baiHat.setTenTacGia(cursor.getString(3));
             baiHat.setUrlBaiHat(cursor.getString(4));
+            baiHat.setHinhAnh(cursor.getBlob(5));
             dsbaihat.add(baiHat);
         }
         cursor.close();
 
         return dsbaihat;
+    }
+
+    public BaiHat getOne(Object... keys) {
+        return null;
+    }
+
+
+    @Deprecated
+    public void add(BaiHat baiHat) {
+    }
+
+
+    @Deprecated
+    public void delete(Object... keys) {
+    }
+
+
+    @Deprecated
+    public void edit(BaiHat oldEntity, BaiHat newEntity) {
     }
 }

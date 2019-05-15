@@ -10,6 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -59,6 +60,28 @@ public class Fragment_List_BaiHat extends Fragment {
                         intent.putExtra("song", baiHat);
 
                         startActivity(intent);
+                    }
+                });
+                adapter.setOnMoreItemClick(new PlayNhacAdapter.OnMoreItemClickListener() {
+                    @Override
+                    public void onMoreItemClick(View view, BaiHat song, MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.menu_item_play:
+                                Intent intent = new Intent(getContext(), Activity_play_nhac.class);
+                                intent.putExtra("song", song);
+
+                                startActivity(intent);
+                                break;
+                            case R.id.menu_item_them_playlist:
+                                // showPopup();
+                                break;
+                            case R.id.menu_item_rename:
+
+                                break;
+                            case R.id.menu_item_delete:
+
+                                break;
+                        }
                     }
                 });
                 rclbaiHat.setAdapter(adapter);

@@ -10,13 +10,15 @@ public class BaiHat implements Serializable {
     private int idCasi;
     private String tenTacGia;
     private String urlBaiHat;
+    private byte[] hinhAnh;
 
-    public BaiHat(int idBaiHat, String tenBaiHat, int idCasi, String tenTacGia, String urlBaiHat) {
+    public BaiHat(int idBaiHat, String tenBaiHat, int idCasi, String tenTacGia, String urlBaiHat, byte[] hinhAnh) {
         this.idBaiHat = idBaiHat;
         this.tenBaiHat = tenBaiHat;
         this.idCasi = idCasi;
         this.tenTacGia = tenTacGia;
         this.urlBaiHat = urlBaiHat;
+        this.hinhAnh = hinhAnh;
     }
 
     public BaiHat() {
@@ -60,5 +62,13 @@ public class BaiHat implements Serializable {
 
     public void setUrlBaiHat(String urlBaiHat) {
         this.urlBaiHat = urlBaiHat;
+    }
+
+    public byte[] getHinhAnh() {
+        return hinhAnh;
+    }
+
+    public void setHinhAnh(byte[] hinhAnh) {
+        this.hinhAnh = hinhAnh;
     }
 }

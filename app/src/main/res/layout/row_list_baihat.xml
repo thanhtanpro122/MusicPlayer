@@ -1,51 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    android:id="@+id/parent"
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<com.balysv.materialripple.MaterialRippleLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/RippleStyleBlack"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content">
-    <RelativeLayout
-        android:padding="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:textColor="@android:color/black"
-            android:textSize="17sp"
-            android:text="1"
-            android:layout_margin="10dp"
-            android:id="@+id/txt_nhac_index"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:textColor="@android:color/black"
-            android:textSize="17sp"
-            android:text="Ten Ca Khuc"
-            android:singleLine="true"
-            android:maxWidth="250dp"
-            android:ellipsize="end"
-            android:layout_toRightOf="@+id/txt_nhac_index"
-            android:id="@+id/txt_play_nhac_ten_baihat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:textColor="@android:color/black"
-            android:textSize="12sp"
-            android:text="Ten Ca Si"
-            android:singleLine="true"
-            android:maxWidth="250dp"
-            android:ellipsize="end"
-            android:layout_toRightOf="@id/txt_nhac_index"
-            android:layout_below="@+id/txt_play_nhac_ten_baihat"
-            android:id="@+id/txt_play_nhac_ten_casi"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
 
-        <!--<ImageView-->
-            <!--android:src="@drawable/iconlove"-->
-            <!--android:layout_marginRight="5dp"-->
-            <!--android:layout_centerVertical="true"-->
-            <!--android:layout_alignParentRight="true"-->
-            <!--android:id="@+id/img_luot_thich_bai_hat"-->
-            <!--android:layout_width="30dp"-->
-            <!--android:layout_height="30dp" />-->
-    </RelativeLayout>
-</RelativeLayout>
+    <LinearLayout
+        android:id="@+id/lyt_parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:minHeight="?attr/actionBarSize"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="@dimen/spacing_large"
+            android:layout_height="0dp" />
+
+        <com.mikhaellopez.circularimageview.CircularImageView
+            android:id="@+id/img_song"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="@dimen/spacing_large"
+            android:layout_marginBottom="@dimen/spacing_large"
+            android:src="@drawable/ic_music_note_24dp" />
+
+        <View
+            android:layout_width="@dimen/spacing_large"
+            android:layout_height="0dp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:textSize="17sp"
+                        android:text="Ten Ca Khuc"
+                        android:singleLine="true"
+                        android:maxWidth="250dp"
+                        android:ellipsize="end"
+                        android:layout_toRightOf="@+id/txt_nhac_index"
+                        android:id="@+id/txt_play_nhac_ten_baihat"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                    <TextView
+                        android:textColor="@android:color/black"
+                        android:textSize="12sp"
+                        android:text="Ten Ca Si"
+                        android:singleLine="true"
+                        android:maxWidth="250dp"
+                        android:ellipsize="end"
+                        android:layout_toRightOf="@id/txt_nhac_index"
+                        android:layout_below="@+id/txt_play_nhac_ten_baihat"
+                        android:id="@+id/txt_play_nhac_ten_casi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="@dimen/spacing_large"
+                    android:layout_height="0dp" />
+
+                <ImageButton
+                    android:id="@+id/btn_more"
+                    android:layout_width="wrap_content"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/btn_more_desc"
+                    android:src="@drawable/ic_more_vert_black_24dp" />
+
+                <View
+                    android:layout_width="@dimen/spacing_large"
+                    android:layout_height="0dp" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_alignParentBottom="true"
+                android:background="@color/grey_20" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</com.balysv.materialripple.MaterialRippleLayout>

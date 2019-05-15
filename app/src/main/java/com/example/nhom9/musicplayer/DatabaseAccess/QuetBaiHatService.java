@@ -16,11 +16,11 @@ public class QuetBaiHatService extends DbHelper {
     private static ArrayList<String> MEDIA_PATHs = new ArrayList<>();
 
     static {
-        MEDIA_PATHs.add(Environment.getExternalStorageDirectory().getPath()+ "/Music/");
+        MEDIA_PATHs.add(Environment.getExternalStorageDirectory().getPath()+ "/Download/"); //Music
 
         File[] fileList = new File("/storage/").listFiles();
         for (File file : fileList) {
-            String musicPath = file.getAbsolutePath() + "/Music/";
+            String musicPath = file.getAbsolutePath() + "/Download/";
             if (file.isDirectory() && new File(musicPath).exists() && file.canRead()){
                 MEDIA_PATHs.add(musicPath);
             }
@@ -56,6 +56,13 @@ public class QuetBaiHatService extends DbHelper {
         String songName = fileName.replace(MP3_EXT, "");
         String filePath = file.getPath();
 
+
+        byte[] embeddedPicture = null;
+        try {
+            embeddedPicture = retriever.getEmbeddedPicture();
+        } catch (Exception ignored) {
+        }
+
         int idCaSi = -1;
         String artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
         if (artist != null) {
@@ -73,6 +80,7 @@ public class QuetBaiHatService extends DbHelper {
 
         values.clear();
         values.put("TenBaiHat", songName);
+        values.put("HinhAnh",embeddedPicture);
         if (idCaSi != -1) {
             values.put("IdCaSi", idCaSi);
         }

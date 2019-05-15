@@ -76,11 +76,12 @@ public class Fragment_PlayList extends Fragment {
         edtTitle = enterTitleDialog.findViewById(R.id.edtTitle);
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
-        dialogBuilder.setTitle("Enter playlist's name");
+        dialogBuilder.setTitle("Mời nhập tên playlist");
         dialogBuilder.setView(enterTitleDialog);
         dialogBuilder.setCancelable(true);
-        dialogBuilder.setNegativeButton("Cancel", this::dialogOnNegativeButtonClick);
-        dialogBuilder.setPositiveButton("Save", this::dialogOnPositiveButtonClick);
+        dialogBuilder.setPositiveButton("Lưu", this::dialogOnPositiveButtonClick);
+        dialogBuilder.setNegativeButton("Trở về", this::dialogOnNegativeButtonClick);
+
 
         dialogBuilder.show();
     }

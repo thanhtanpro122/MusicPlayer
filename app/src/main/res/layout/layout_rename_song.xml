@@ -19,7 +19,7 @@
             android:id="@+id/edtTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nhập tên playlist.."
+            android:hint="Anh ơi ở lại ádasdasd"
             android:inputType="text"
             android:importantForAutofill="no"
             tools:targetApi="o" />

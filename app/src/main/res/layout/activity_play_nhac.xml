@@ -80,7 +80,7 @@
                 android:layout_height="50dp"
                 android:id="@+id/btn_preview"/>
             <ImageButton
-                android:src="@drawable/iconplay"
+                android:src="@drawable/iconpause"
                 android:scaleType="fitXY"
                 android:background="@null"
                 android:layout_marginRight="15dp"

@@ -56,8 +56,9 @@ public class Activity_trang_chu extends AppCompatActivity {
     private void Init(){
         ViewPageAdapter pageAdapter = new ViewPageAdapter(getSupportFragmentManager());
 
+        pageAdapter.addFragment("Songs", new Fragment_List_BaiHat());
         pageAdapter.addFragment("Playlists", new Fragment_PlayList());
-        pageAdapter.addFragment("Bài Hát", new Fragment_List_BaiHat());
+
 
 
         TabLayout tabLayout = findViewById(R.id.tab_layout_library);
