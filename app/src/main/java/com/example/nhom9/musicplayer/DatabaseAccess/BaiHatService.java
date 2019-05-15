@@ -46,12 +46,23 @@ public class BaiHatService extends DbHelper {
     }
 
 
-    @Deprecated
     public void delete(Object... keys) {
+        if(keys !=null && keys.length>0)
+        {
+            String query = "DELETE FROM BaiHat WHERE IdBaiHat= ? ";
+            database.execSQL(query, new String[]{(String)keys[0]});
+        }
+    }
+
+    public  void deleteID(int id)
+    {
+        String query = "DELETE FROM BaiHat WHERE IdBaiHat= ? ";
+        database.execSQL(query, new Integer[]{id});
     }
 
 
-    @Deprecated
     public void edit(BaiHat oldEntity, BaiHat newEntity) {
+        String query= "UPDATE BaiHat SET TenBaiHat = ? WHERE IdBaiHat= ?";
+        database.execSQL(query, new String[]{newEntity.getTenBaiHat(),String.valueOf(oldEntity.getIdBaiHat())});
     }
 }

@@ -28,6 +28,7 @@ import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.Model.PlayList;
 import com.example.nhom9.musicplayer.R;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -37,6 +38,9 @@ public class Fragment_List_BaiHat extends Fragment {
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
     private EditText edtTitle;
     private TextInputLayout tilTitle;
+    BaiHatService baiHatService;
+    private ArrayList<BaiHat> baiHats;
+    PlayNhacAdapter adapter;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -59,16 +63,18 @@ public class Fragment_List_BaiHat extends Fragment {
 //        }
         return view;
     }
-    private void loadData(View view) {
 
+    private void loadData(View view) {
             RecyclerView rclbaiHat = view.findViewById(R.id.recycler_play_baihat);
             rclbaiHat.setLayoutManager(new LinearLayoutManager(getContext()));
             rclbaiHat.setHasFixedSize(true);
 
             try {
-                BaiHatService baiHatService = new BaiHatService(getContext());
+                baiHatService = new BaiHatService(getContext());
 
-                PlayNhacAdapter adapter = new PlayNhacAdapter(getContext(), baiHatService.layDanhSachBaiHat());
+                baiHats = baiHatService.layDanhSachBaiHat();
+
+                adapter = new PlayNhacAdapter(getContext(), baiHats);
 
                 adapter.setOnItemClickListener(new PlayNhacAdapter.ItemClickListener() {
                     @Override
@@ -93,10 +99,10 @@ public class Fragment_List_BaiHat extends Fragment {
                                 // showPopup();
                                 break;
                             case R.id.menu_item_rename:
-
+                                Rename(song);
                                 break;
                             case R.id.menu_item_delete:
-
+                                Delete(song);
                                 break;
                         }
                     }
@@ -106,44 +112,45 @@ public class Fragment_List_BaiHat extends Fragment {
             }
 
     }
-//    private void fabAddSongOnClick(View view) {
-//        LayoutInflater inflater = getLayoutInflater();
-//
-//        @SuppressLint("InflateParams")
-//        View enterTitleDialog = inflater.inflate(R.layout.layout_rename_song, null);
-//
-//        tilTitle = enterTitleDialog.findViewById(R.id.tilTitle);
-//        edtTitle = enterTitleDialog.findViewById(R.id.edtTitle);
-//
-//        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
-//        dialogBuilder.setTitle("Đổi tên");
-//        dialogBuilder.setView(enterTitleDialog);
-//        dialogBuilder.setCancelable(true);
-//        dialogBuilder.setPositiveButton("Lưu", this::dialogOnPositiveButtonClick);
-//        dialogBuilder.setNegativeButton("Trở về", this::dialogOnNegativeButtonClick);
-//
-//
-//        dialogBuilder.show();
-//    }
-//    private void dialogOnPositiveButtonClick(DialogInterface dialogInterface, int i) {
-//        dialogInterface.dismiss();
-//    }
-//
-//    private void dialogOnNegativeButtonClick(DialogInterface dialogInterface, int i) {
-////        String title = edtTitle.getText().toString().trim();
-////        if (title.isEmpty()) {
-////            tilTitle.setError("The title cannot be empty");
-////            return;
-////        }
-////        tilTitle.setErrorEnabled(false);
-////        PlayList playList = new PlayList();
-////        playList.setTenPlayList(title);
-////        service.add(playList);
-////        playLists.clear();
-////        playLists.addAll(service.getAll());
-////        adapter.notifyDataSetChanged();
-//
-//    }
+
+    private void Delete(BaiHat baiHat){
+        AlertDialog.Builder confirmDelete = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
+        confirmDelete.setTitle("Xóa bài hát");
+        confirmDelete.setMessage("Bạn có chắc chắn muốn xóa bài hát: "+ baiHat.getTenBaiHat() + "?");
+        confirmDelete.setPositiveButton("yes", (dialogInterface, i) -> {
+            baiHatService.deleteID(baiHat.getIdBaiHat());
+            baiHats.clear();
+            baiHats.addAll(baiHatService.layDanhSachBaiHat());
+            adapter.notifyDataSetChanged();
+
+        });
+        confirmDelete.setNegativeButton("Hủy bỏ", (dialogInterface, i) -> dialogInterface.dismiss());
+        confirmDelete.show();
+    }
+    private void Rename(BaiHat baiHat){
+        AlertDialog.Builder renameDialog= new AlertDialog.Builder(Objects.requireNonNull(getContext()));
+        renameDialog.setTitle("Đổi tên bài hát");
+        renameDialog.setMessage("Nhập tên khác : "+ baiHat.getTenBaiHat());
+
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View view= inflater.inflate(R.layout.layout_rename_song, null);
+        EditText editTenBaiHat= view.findViewById(R.id.edtTitle);
+        editTenBaiHat.setText(baiHat.getTenBaiHat());
+        renameDialog.setView(view);
+        renameDialog.setPositiveButton("Lưu", (dialogInterface, i) -> {
+            BaiHat baiHatMoi = new BaiHat();
+            baiHatMoi.setTenBaiHat(editTenBaiHat.getText().toString());
+            baiHatService.edit(baiHat, baiHatMoi);
+            baiHats.clear();
+            baiHats.addAll(baiHatService.layDanhSachBaiHat());
+            adapter.notifyDataSetChanged();
+
+        });
+        renameDialog.setNegativeButton("Hủy", (dialogInterface, i) -> dialogInterface.dismiss());
+        renameDialog.show();
+
+
+    }
 
 
 
