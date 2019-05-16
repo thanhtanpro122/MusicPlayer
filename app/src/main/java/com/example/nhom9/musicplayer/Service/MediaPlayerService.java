@@ -780,6 +780,12 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         buildNotification(PlaybackStatus.PLAYING);
     }
 
+    public void btnPreviousClick(){
+        skipToPrevious();
+        updateMetaData();
+        buildNotification(PlaybackStatus.PLAYING);
+    }
+
 
 
 }

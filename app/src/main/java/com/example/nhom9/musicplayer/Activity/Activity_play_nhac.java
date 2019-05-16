@@ -218,24 +218,16 @@ public class Activity_play_nhac extends AppCompatActivity {
             }
         });
 //
-//        btnPreview.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                position--;
-//                if (position < 0) {
-//                    position = arraySongs.size() - 1;
-//                }
-//                mediaPlayer.stop();
-//                mediaPlayer.release();
-//                baiHat = arraySongs.get(position);
-//                getSupportActionBar().setTitle(baiHat.getTenBaiHat());
-//                KhoiTaoMediaPlayer();
-//                btnPlay.setImageResource(R.drawable.iconpause);
-//                SetTimeTotal();
-//                mediaPlayer.start();
-//                UpdateTimeSong();
-//            }
-//        });
+        btnPreview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                player.btnPreviousClick();
+                btnPlay.setImageResource(R.drawable.iconpause);
+                baiHat = player.getCurrentBaiHat();
+                indexBaiHat = player.getCurrentIndex();
+                setUpScreen();
+            }
+        });
 //
 //        btnRepeat.setOnClickListener(new View.OnClickListener() {
 //            @Override
