@@ -26,13 +26,18 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.PlayLi
     private OnItemClickListener onItemClick;
     private OnMoreItemClickListener onMoreItemClick;
 
-
     public PlayListAdapter(Context context, ArrayList<PlayList> playLists)
     {
-          this.context = context;
-          this.playLists=playLists;
-          inflater = LayoutInflater.from(context);
+        this.context = context;
+        this.playLists=playLists;
+        inflater = LayoutInflater.from(context);
     }
+
+    public PlayListAdapter()
+    {
+
+    }
+
     public void setOnItemClick(OnItemClickListener onItemClick) {
         this.onItemClick = onItemClick;
     }
@@ -40,6 +45,9 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.PlayLi
     public void setOnMoreItemClick(OnMoreItemClickListener onMoreItemClick) {
         this.onMoreItemClick = onMoreItemClick;
     }
+
+
+
     @NonNull
     @Override
     //khi mới chạy lên đi vào hàm này
@@ -52,11 +60,13 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.PlayLi
 
     @Override
     public void onBindViewHolder(@NonNull PlayListViewHolder playListViewHolder, int position) {
+
+        PlayListService service = null;
         try {
-            PlayListService service = new PlayListService(context);
+            service = new PlayListService(context);
             PlayList playList = playLists.get(position);
             playListViewHolder.txtPlayListName.setText(playList.getTenPlayList());
-            playListViewHolder.txtSongCount.setText(service.getSongNumber(playList.getIdPlayList())+ " songs");
+            playListViewHolder.txtSongCount.setText(String.valueOf(service.getSongNumber(playList.getIdPlayList())));
             playListViewHolder.parent.setOnClickListener(view ->{
                 if(onItemClick!=null)
                 {
@@ -67,9 +77,11 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.PlayLi
             playListViewHolder.btnMore.setOnClickListener(view ->{
                 btnMoreClick(view,playList);
             });
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     private void btnMoreClick(View view, PlayList playList) {
@@ -102,8 +114,6 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.PlayLi
             txtPlayListName = itemView.findViewById(R.id.txt_song_name);
             txtSongCount = itemView.findViewById(R.id.txt_artist);
             btnMore = itemView.findViewById(R.id.btn_more);
-
-
         }
     }
     public interface OnItemClickListener {
@@ -113,5 +123,6 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.PlayLi
     public interface OnMoreItemClickListener {
         void onMoreItemClick(View view, PlayList playList, MenuItem item);
     }
+
 
 }

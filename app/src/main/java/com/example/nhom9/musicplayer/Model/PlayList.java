@@ -1,8 +1,9 @@
 package com.example.nhom9.musicplayer.Model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class PlayList {
+public class PlayList implements Serializable {
     private int idPlayList;
     private String tenPlayList;
     private Date ngayTao;
