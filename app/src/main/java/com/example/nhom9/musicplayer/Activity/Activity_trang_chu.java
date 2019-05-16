@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -12,11 +13,12 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.example.nhom9.musicplayer.Adapter.ViewPageAdapter;
@@ -26,12 +28,16 @@ import com.example.nhom9.musicplayer.Fragment.Fragment_PlayList;
 import com.example.nhom9.musicplayer.R;
 import com.example.nhom9.musicplayer.Service.MediaPlayerService;
 
+import java.text.SimpleDateFormat;
+
 public class Activity_trang_chu extends AppCompatActivity {
 
     public static final String Broadcast_PLAY_NEW_AUDIO = "com.example.nhom9.musicplayer.PlayNewAudio";
 
     private MediaPlayerService player;
     boolean serviceBound = false;
+    SeekBar collapseSeekbar;
+    ImageButton btnPlay;
 
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
 //    private ActionBar actionBar;
@@ -41,15 +47,29 @@ public class Activity_trang_chu extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trang_chu);
 
-//        setSupportActionBar(findViewById(R.id.action_bar));
         loadFragment(new Fragment_List_BaiHat());
-//        actionBar = getSupportActionBar();
-//        actionBar.setTitle("Tất cả bài hát");
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-//        toolbar.setTitle("Danh sách bài hát");
+        btnPlay = (ImageButton) findViewById(R.id.btn_play_collapse);
+        collapseSeekbar = (SeekBar)findViewById(R.id.seekbar_song_collapse);
+        collapseSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                player.setSeekTo(seekBar.getProgress());
+            }
+        });
 
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -61,6 +81,40 @@ public class Activity_trang_chu extends AppCompatActivity {
             loadData();
         }
 
+        if(player != null) {
+            UpdateTimeSong();
+            SetTimeTotal();
+        }
+    }
+
+    private void UpdateTimeSong() {
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (player.isMediaPlayerNull()) {
+                    return;
+                }
+                if (!player.getMediaPlayerState()) {
+                    btnPlay.setImageResource(R.drawable.iconplay);
+                } else {
+                    btnPlay.setImageResource(R.drawable.iconpause);
+                }
+
+                collapseSeekbar.setProgress(player.getCurrentPosition());
+
+//                setUpScreen();
+//                resetScreen();
+
+                handler.postDelayed(this, 100);
+            }
+        }, 100);
+    }
+
+    public void SetTimeTotal() {
+        //Gán max của skSong = thoi gian phát
+        collapseSeekbar.setMax(player.getDuration());
+//        Activity_trang_chu.collapseSeekbar.setProgress(player.getDuration());
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -69,12 +123,10 @@ public class Activity_trang_chu extends AppCompatActivity {
             Fragment fragment;
             switch (item.getItemId()){
                 case R.id.action_home:
-//                    actionBar.setTitle("Tất cả bài hát");
                     fragment = new Fragment_List_BaiHat();
                     loadFragment(fragment);
                     return true;
                 case R.id.action_playlist:
-//                    actionBar.setTitle("Playlist");
                     fragment = new Fragment_PlayList();
                     loadFragment(fragment);
                     return true;
@@ -85,6 +137,8 @@ public class Activity_trang_chu extends AppCompatActivity {
             return false;
         }
     };
+
+
 
     private void loadFragment(Fragment fragment){
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -114,13 +168,6 @@ public class Activity_trang_chu extends AppCompatActivity {
         pageAdapter.addFragment("Songs", new Fragment_List_BaiHat());
         pageAdapter.addFragment("Playlists", new Fragment_PlayList());
 
-
-
-//        TabLayout tabLayout = findViewById(R.id.tab_layout_library);
-//        ViewPager pgrMain = findViewById(R.id.pgrMain);
-
-//        pgrMain.setAdapter(pageAdapter);
-//        tabLayout.setupWithViewPager(pgrMain);
     }
 
     @Override

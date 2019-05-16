@@ -35,7 +35,8 @@ public class Activity_play_nhac extends AppCompatActivity {
 
     public static final String Broadcast_PLAY_NEW_AUDIO = "com.example.nhom9.musicplayer.PlayNewAudio";
 
-    private MediaPlayerService player;
+    public static MediaPlayerService player;
+
     boolean serviceBound = false;
 
     TextView txtTime, txtTotalTime;
@@ -283,6 +284,7 @@ public class Activity_play_nhac extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 player.setSeekTo(seekBar.getProgress());
+//                player.setSeekTo(Activity_trang_chu.collapseSeekbar.getProgress());
             }
         });
     }
@@ -304,6 +306,7 @@ public class Activity_play_nhac extends AppCompatActivity {
                 txtTime.setText(dinhDangGio.format(player.getCurrentPosition()));
 
                 seekBar.setProgress(player.getCurrentPosition());
+//                Activity_trang_chu.collapseSeekbar.setProgress(player.getCurrentPosition());
 
 //                setUpScreen();
                 resetScreen();
@@ -318,6 +321,7 @@ public class Activity_play_nhac extends AppCompatActivity {
         txtTotalTime.setText(dinhDanggio.format(player.getDuration()));
         //Gán max của skSong = thoi gian phát
         seekBar.setMax(player.getDuration());
+//        Activity_trang_chu.collapseSeekbar.setProgress(player.getDuration());
     }
 
 //    private void KhoiTaoMediaPlayer() {

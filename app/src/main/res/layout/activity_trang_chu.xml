@@ -23,7 +23,57 @@
         android:layout_width="match_parent"
         android:layout_height="543dp"
         android:layout_gravity="center"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="bottom">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/txt_TenBaiHat"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="9"
+                    android:text="Hello"
+                    android:textAlignment="center"
+                    android:textSize="30sp" />
+
+                <TextView
+                    android:id="@+id/txt_TenCaSi"
+                    android:layout_width="383dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="9"
+                    android:text="TextView"
+                    android:textAlignment="center"
+                    android:textSize="30sp" />
+
+                <ImageButton
+                    android:id="@+id/btn_play_collapse"
+                    android:layout_width="48dp"
+                    android:layout_height="46dp"
+                    android:layout_marginEnd="15dp"
+                    android:background="@null"
+                    android:contentDescription="@string/app_name"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/iconpause" />
+            </LinearLayout>
+
+            <SeekBar
+                android:id="@+id/seekbar_song_collapse"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+
+                android:layout_weight="9" />
+        </LinearLayout>
+
+    </FrameLayout>
+
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/bottom_navigation"
