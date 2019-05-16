@@ -487,8 +487,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     private void updateMetaData() {
-        Bitmap albumArt = BitmapFactory.decodeResource(getResources(),
-                R.drawable.image5); //replace with medias albumArt
+        Bitmap albumArt = BitmapFactory.decodeByteArray(activeBaiHat.getHinhAnh(), 0, activeBaiHat.getHinhAnh().length); //replace with medias albumArt
         // Update the current metadata
         mediaSession.setMetadata(new MediaMetadataCompat.Builder()
                 .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, albumArt)
@@ -565,8 +564,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             play_pauseAction = playbackAction(0);
         }
 
-        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(),
-                R.drawable.image5); //replace with your own image
+        Bitmap largeIcon = BitmapFactory.decodeByteArray(activeBaiHat.getHinhAnh(), 0, activeBaiHat.getHinhAnh().length); //replace with your own image
 
         // Create a new Notification
         NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
