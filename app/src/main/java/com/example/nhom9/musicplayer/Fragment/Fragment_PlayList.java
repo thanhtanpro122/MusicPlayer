@@ -20,12 +20,14 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.example.nhom9.musicplayer.Activity.Activity_play_nhac;
+import com.example.nhom9.musicplayer.Activity.Activity_playlist_baihat;
 import com.example.nhom9.musicplayer.Adapter.PlayListAdapter;
 import com.example.nhom9.musicplayer.Adapter.PlayNhacAdapter;
 import com.example.nhom9.musicplayer.DatabaseAccess.PlayListService;
 import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.Model.PlayList;
 import com.example.nhom9.musicplayer.R;
+import com.example.nhom9.musicplayer.common.Consts;
 import com.example.nhom9.musicplayer.utils.Tools;
 import com.example.nhom9.musicplayer.widget.SpacingItemDecoration;
 
@@ -65,6 +67,8 @@ public class Fragment_PlayList extends Fragment {
             playLists = service.getAll();
 
             adapter = new PlayListAdapter(getContext(), playLists);
+            adapter.setOnMoreItemClick(this::adapterPlaylist_itemMoreClick);
+            adapter.setOnItemClick(this::adapterPlaylist_itemClick);
             recyclerView.setAdapter(adapter);
         } catch (IOException e) {
             e.printStackTrace();
@@ -72,6 +76,88 @@ public class Fragment_PlayList extends Fragment {
 
 
         return root;
+    }
+    private void adapterPlaylist_itemClick(View view, PlayList playList, int i) {
+        Intent intent = new Intent(getContext(), Activity_playlist_baihat.class);
+        intent.putExtra(Consts.PLAY_LIST, playList);
+        startActivity(intent);
+    }
+
+
+    private void adapterPlaylist_itemMoreClick(View view, PlayList playList, MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.menu_item_play:
+                adapterPlaylists_itemClick(view, playList);
+                break;
+            case R.id.menu_item_rename:
+                renamePlaylist(playList);
+                break;
+            case R.id.menu_item_delete:
+                deletePlaylist(playList);
+                break;
+        }
+    }
+
+    private void adapterPlaylists_itemClick(View view, PlayList playList){
+        ArrayList<BaiHat> lstSong = service.getSongList(String.valueOf(playList.getIdPlayList()));
+        Intent playIntent = new Intent(getActivity(), Activity_play_nhac.class);
+        playIntent.putExtra(Consts.SONGS_EXTRA, lstSong);
+        playIntent.putExtra(Consts.SONG_EXTRA, lstSong.get(0));
+        playIntent.putExtra(Consts.SONG_POSITION_EXTRA, 0);
+
+        startActivity(playIntent);
+    }
+    private void renamePlaylist(PlayList playList) {
+        LayoutInflater inflater = getLayoutInflater();
+
+        @SuppressLint("InflateParams")
+        View enterTitleDialog = inflater.inflate(R.layout.layout_dialog, null);
+
+        tilTitle = enterTitleDialog.findViewById(R.id.tilTitle);
+        edtTitle = enterTitleDialog.findViewById(R.id.edtTitle);
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
+        dialogBuilder.setTitle("New name");
+        dialogBuilder.setView(enterTitleDialog);
+        dialogBuilder.setCancelable(true);
+        dialogBuilder.setNegativeButton("Cancel", this::dialogOnNegativeButtonClick);
+        dialogBuilder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    service = new PlayListService(getContext());
+                    String newname = edtTitle.getText().toString().trim();
+                    service.rename(String.valueOf(playList.getIdPlayList()), newname);
+                    playLists.clear();
+                    playLists.addAll(service.getAll());
+                    adapter.notifyDataSetChanged();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        dialogBuilder.show();
+
+    }
+
+
+
+    private void deletePlaylist(PlayList playList) {
+        try {
+            service = new PlayListService(getContext());
+
+            service.deletePLaylist(String.valueOf(playList.getIdPlayList()));
+            playLists.clear();
+            playLists.addAll(service.getAll());
+            adapter.notifyDataSetChanged();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     private void init(){

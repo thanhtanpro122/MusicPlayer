@@ -20,6 +20,7 @@
             android:enabled="true"
             android:exported="true" />
 
+        <activity android:name=".Activity.Activity_playlist_baihat"></activity>
         <activity android:name=".Activity.Activity_play_nhac"/>
         <activity android:name=".Activity.Activity_trang_chu"
             android:launchMode="singleInstance">
