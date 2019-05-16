@@ -145,7 +145,7 @@ public class Activity_play_nhac extends AppCompatActivity {
     public void setUpScreen(){
         getSupportActionBar().setTitle(baiHat.getTenBaiHat());
         SetTimeTotal();
-        UpdateTimeSong();
+//        UpdateTimeSong();
     }
 
     /**
@@ -280,61 +280,61 @@ public class Activity_play_nhac extends AppCompatActivity {
 //        });
     }
 
-    private void UpdateTimeSong() {
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (mediaPlayer == null) {
-                    return;
-                }
-
-                SimpleDateFormat dinhDangGio = new SimpleDateFormat("mm:ss");
-                txtTime.setText(dinhDangGio.format(mediaPlayer.getCurrentPosition()));
-
-                seekBar.setProgress(mediaPlayer.getCurrentPosition());
-
-                //Kiểm tra thời gian bài hát  nếu kết thúc thì chuyển tiếp
-                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        if (mediaPlayer.isLooping()) {
-                            return;
-                        }
-
-                        position++;
-                        //Ktra pos có vượt size arraySong
-                        if (position > arraySongs.size() - 1) {
-                            position = 0;
-                        }
-
-                        //Random
-                        if (btnRandom.getTag().equals("1")) {
-                            Random random = new Random();
-                            position = random.nextInt(arraySongs.size());
-                        }
-
-                        //Gan bài hát bằng array(pos)
-                        baiHat = arraySongs.get(position);
-                        mediaPlayer.stop();
-                        mediaPlayer.release();
-
-                        KhoiTaoMediaPlayer();
-//                        if (btnRepeat.getTag().equals('1')){
-//                            btnRepeat.setImageResource(R.drawable.iconrepeat);
-//                            btnRepeat.setTag('0');
+//    private void UpdateTimeSong() {
+//        final Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (mediaPlayer == null) {
+//                    return;
+//                }
+//
+//                SimpleDateFormat dinhDangGio = new SimpleDateFormat("mm:ss");
+//                txtTime.setText(dinhDangGio.format(mediaPlayer.getCurrentPosition()));
+//
+//                seekBar.setProgress(mediaPlayer.getCurrentPosition());
+//
+//                //Kiểm tra thời gian bài hát  nếu kết thúc thì chuyển tiếp
+//                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//                    @Override
+//                    public void onCompletion(MediaPlayer mp) {
+//                        if (mediaPlayer.isLooping()) {
+//                            return;
 //                        }
-                        btnPlay.setImageResource(R.drawable.iconpause);
-                        SetTimeTotal();
-                        mediaPlayer.start();
-                        UpdateTimeSong();
-                    }
-                });
-
-                handler.postDelayed(this, 500);
-            }
-        }, 100);
-    }
+//
+//                        position++;
+//                        //Ktra pos có vượt size arraySong
+//                        if (position > arraySongs.size() - 1) {
+//                            position = 0;
+//                        }
+//
+//                        //Random
+//                        if (btnRandom.getTag().equals("1")) {
+//                            Random random = new Random();
+//                            position = random.nextInt(arraySongs.size());
+//                        }
+//
+//                        //Gan bài hát bằng array(pos)
+//                        baiHat = arraySongs.get(position);
+//                        mediaPlayer.stop();
+//                        mediaPlayer.release();
+//
+//                        KhoiTaoMediaPlayer();
+////                        if (btnRepeat.getTag().equals('1')){
+////                            btnRepeat.setImageResource(R.drawable.iconrepeat);
+////                            btnRepeat.setTag('0');
+////                        }
+//                        btnPlay.setImageResource(R.drawable.iconpause);
+//                        SetTimeTotal();
+//                        mediaPlayer.start();
+//                        UpdateTimeSong();
+//                    }
+//                });
+//
+//                handler.postDelayed(this, 500);
+//            }
+//        }, 100);
+//    }
 
     public void SetTimeTotal() {
         SimpleDateFormat dinhDanggio = new SimpleDateFormat("mm:ss");

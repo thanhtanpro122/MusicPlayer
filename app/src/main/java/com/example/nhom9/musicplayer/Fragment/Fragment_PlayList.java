@@ -68,7 +68,7 @@ public class Fragment_PlayList extends Fragment {
 
             adapter = new PlayListAdapter(getContext(), playLists);
             adapter.setOnMoreItemClick(this::adapterPlaylist_itemMoreClick);
-            adapter.setOnItemClick(this::adapterPlaylist_itemClick);
+            adapter.setOnItemClickListener(this::adapterPlaylist_itemClick);
             recyclerView.setAdapter(adapter);
         } catch (IOException e) {
             e.printStackTrace();
