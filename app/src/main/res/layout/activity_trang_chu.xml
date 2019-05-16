@@ -7,17 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".Activity.Activity_trang_chu">
 
-    <!--<android.support.v7.widget.Toolbar-->
-        <!--android:id="@+id/action_bar"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="?attr/actionBarSize"-->
-        <!--android:background="@color/colorPrimary"-->
-        <!--android:elevation="4dp"-->
-        <!--android:theme="@style/ThemeOverlay.AppCompat.ActionBar"-->
-        <!--app:itemIconTint="@android:color/white"-->
-        <!--app:itemTextColor="@android:color/white"-->
-        <!--app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />-->
-
     <FrameLayout
         android:id="@+id/frame_container"
         android:layout_width="match_parent"
@@ -79,14 +68,14 @@
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom"
         android:background="?android:attr/windowBackground"
         android:foreground="?attr/selectableItemBackground"
         app:itemBackground="@color/colorPrimary"
         app:itemIconTint="@android:color/white"
+
         app:itemTextColor="@android:color/white"
-        app:menu="@menu/bottom_nav_menu" />
+        app:menu="@menu/bottom_nav_menu"
+        android:layout_gravity="bottom"/>
 
 
 </android.support.design.widget.CoordinatorLayout>

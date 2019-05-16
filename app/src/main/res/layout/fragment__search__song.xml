@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"
+        android:text="Tìm kiếm bài hát"
+        android:textColor="#b6000000"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <SearchView
+        android:id="@+id/search_box"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        tools:layout_editor_absoluteX="151dp"
+        tools:layout_editor_absoluteY="8dp" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/search_song_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+</LinearLayout>

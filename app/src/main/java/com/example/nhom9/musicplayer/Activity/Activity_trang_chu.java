@@ -15,16 +15,21 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
+import android.view.View;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.nhom9.musicplayer.Adapter.ViewPageAdapter;
 import com.example.nhom9.musicplayer.DatabaseAccess.QuetBaiHatService;
 import com.example.nhom9.musicplayer.Fragment.Fragment_List_BaiHat;
 import com.example.nhom9.musicplayer.Fragment.Fragment_PlayList;
+import com.example.nhom9.musicplayer.Fragment.Fragment_Search_Song;
 import com.example.nhom9.musicplayer.R;
 import com.example.nhom9.musicplayer.Service.MediaPlayerService;
 
@@ -40,7 +45,7 @@ public class Activity_trang_chu extends AppCompatActivity {
     ImageButton btnPlay;
 
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
-//    private ActionBar actionBar;
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,13 +121,13 @@ public class Activity_trang_chu extends AppCompatActivity {
         collapseSeekbar.setMax(player.getDuration());
 //        Activity_trang_chu.collapseSeekbar.setProgress(player.getDuration());
     }
-
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             Fragment fragment;
             switch (item.getItemId()){
                 case R.id.action_home:
+//                  actionBar.setTitle("Tất cả bài hát");
                     fragment = new Fragment_List_BaiHat();
                     loadFragment(fragment);
                     return true;
@@ -131,7 +136,9 @@ public class Activity_trang_chu extends AppCompatActivity {
                     loadFragment(fragment);
                     return true;
                 case R.id.action_nearby:
-                    Toast.makeText(Activity_trang_chu.this, "Search", Toast.LENGTH_SHORT).show();
+//                    actionBar.setTitle("Tìm kiếm bài hát");
+                    fragment=new Fragment_Search_Song();
+                    loadFragment(fragment);
                     return true;
         }
             return false;

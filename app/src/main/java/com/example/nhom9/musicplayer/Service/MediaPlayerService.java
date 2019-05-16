@@ -202,14 +202,15 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
      */
     @Override
     public void onCompletion(MediaPlayer mp) {
-        if(mediaPlayer.isLooping()){
-            resetMediaForLooping();
-        }else {
-            if(isRandom){
-                processShuffled();
-            }
-            else {
-                skipToNext();
+        if(mediaPlayer.getCurrentPosition() >= mediaPlayer.getDuration()){
+            if(mediaPlayer.isLooping()){
+                resetMediaForLooping();
+            }else {
+                if(isRandom){
+                    processShuffled();
+                }else{
+                    skipToNext();
+                }
             }
         }
         updateMetaData();
