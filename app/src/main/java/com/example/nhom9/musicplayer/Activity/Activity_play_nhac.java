@@ -243,6 +243,11 @@ public class Activity_play_nhac extends AppCompatActivity {
                     player.setMediaPlayerLooping(true);
                     btnRepeat.setImageResource(R.drawable.iconsyned);
                     btnRepeat.setTag('1');
+                    if(btnRandom.getTag().equals('1')){
+                        btnRandom.setImageResource(R.drawable.iconsuffle);
+                        player.setShuffled(false);
+                        btnRandom.setTag('0');
+                    }
                 }
                 else {
                     player.setMediaPlayerLooping(false);
@@ -260,6 +265,11 @@ public class Activity_play_nhac extends AppCompatActivity {
                     btnRandom.setImageResource(R.drawable.iconshuffled);
                     player.setShuffled(true);
                     btnRandom.setTag('1');
+                    if(btnRepeat.getTag().equals('1')){
+                        player.setMediaPlayerLooping(false);
+                        btnRepeat.setImageResource(R.drawable.iconrepeat);
+                        btnRepeat.setTag('0');
+                    }
                 }
                 else {
                     btnRandom.setImageResource(R.drawable.iconsuffle);
