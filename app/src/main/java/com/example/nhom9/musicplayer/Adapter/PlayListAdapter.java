@@ -59,12 +59,12 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.PlayLi
     @Override
     public void onBindViewHolder(@NonNull PlayListViewHolder playListViewHolder, int position) {
 
-        PlayListService service = null;
+
         try {
-            service = new PlayListService(context);
+            PlayListService service= new PlayListService(context);
             PlayList playList = playLists.get(position);
             playListViewHolder.txtPlayListName.setText(playList.getTenPlayList());
-            playListViewHolder.txtSongCount.setText(String.valueOf(service.getSongNumber(playList.getIdPlayList())));
+            playListViewHolder.txtSongCount.setText(String.valueOf(service.getSongNumber(playList.getIdPlayList()))+" bài hát");
             playListViewHolder.parent.setOnClickListener(view ->{
                 if(onItemClick!=null)
                 {

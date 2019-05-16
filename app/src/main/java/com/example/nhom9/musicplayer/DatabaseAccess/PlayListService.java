@@ -107,9 +107,9 @@ public class PlayListService extends DbHelper {
             dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("vi-VN"));
         }
         ContentValues values = new ContentValues();
-        values.put("ID",String.valueOf(System.currentTimeMillis()));
-        values.put("Name", playList.getTenPlayList());
-        values.put("CreateDate",dateFormat.format(new Date()));
+        values.put("IdPlayList",String.valueOf(System.currentTimeMillis()));
+        values.put("TenPlayList", playList.getTenPlayList());
+        values.put("NgayTao",dateFormat.format(new Date()));
         database.insert("PlayList",null,values);
     }
 
@@ -129,11 +129,11 @@ public class PlayListService extends DbHelper {
         }
     }
 
-    public  void rename(String id,String newname)
+    public  void rename(int id,String newname)
     {
         try {
-            String query = "UPDATE Playlist SET Name = ? WHERE ID = ?";
-            database.execSQL(query, new String[]{newname, id});
+            String query = "UPDATE Playlist SET TenPlayList = ? WHERE IdPlayList = ?";
+            database.execSQL(query, new String[]{newname, String.valueOf(id)});
 
         }
         catch (Exception e)

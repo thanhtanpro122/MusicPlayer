@@ -78,9 +78,15 @@ public class Fragment_PlayList extends Fragment {
         return root;
     }
     private void adapterPlaylist_itemClick(View view, PlayList playList, int i) {
-        Intent intent = new Intent(getContext(), Activity_playlist_baihat.class);
-        intent.putExtra(Consts.PLAY_LIST, playList);
-        startActivity(intent);
+        try {
+                Intent intent = new Intent(getContext(), Activity_playlist_baihat.class);
+                intent.putExtra(Consts.PLAY_LIST, playList);
+                startActivity(intent);
+        }
+        catch (Exception r)
+        {
+            r.printStackTrace();
+        }
     }
 
 
@@ -127,7 +133,7 @@ public class Fragment_PlayList extends Fragment {
                 try {
                     service = new PlayListService(getContext());
                     String newname = edtTitle.getText().toString().trim();
-                    service.rename(String.valueOf(playList.getIdPlayList()), newname);
+                    service.rename(playList.getIdPlayList(), newname);
                     playLists.clear();
                     playLists.addAll(service.getAll());
                     adapter.notifyDataSetChanged();
