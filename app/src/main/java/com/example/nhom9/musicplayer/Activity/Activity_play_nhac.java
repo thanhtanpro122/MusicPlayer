@@ -154,6 +154,13 @@ public class Activity_play_nhac extends AppCompatActivity {
         }
     }
 
+    public void resetScreen(){
+        if(player!= null){
+            getSupportActionBar().setTitle(player.getCurrentBaiHat().getTenBaiHat());
+            SetTimeTotal();
+        }
+    }
+
     /**
      * Add the following methods to MainActivity to fix it.
      * All these methods do is save and restore the state of the serviceBound variable
@@ -229,53 +236,55 @@ public class Activity_play_nhac extends AppCompatActivity {
             }
         });
 //
-//        btnRepeat.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (btnRepeat.getTag().equals('0')){
-//                    mediaPlayer.setLooping(true);
-//                    btnRepeat.setImageResource(R.drawable.iconsyned);
-//                    btnRepeat.setTag('1');
-//                }
-//                else {
-//                    mediaPlayer.setLooping(false);
-//                    btnRepeat.setImageResource(R.drawable.iconrepeat);
-//                    btnRepeat.setTag('0');
-//                }
+        btnRepeat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (btnRepeat.getTag().equals('0')){
+                    player.setMediaPlayerLooping(true);
+                    btnRepeat.setImageResource(R.drawable.iconsyned);
+                    btnRepeat.setTag('1');
+                }
+                else {
+                    player.setMediaPlayerLooping(false);
+                    btnRepeat.setImageResource(R.drawable.iconrepeat);
+                    btnRepeat.setTag('0');
+                }
+
+            }
+        });
 //
-//            }
-//        });
+        btnRandom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (btnRandom.getTag().equals('0')){
+                    btnRandom.setImageResource(R.drawable.iconshuffled);
+                    player.setShuffled(true);
+                    btnRandom.setTag('1');
+                }
+                else {
+                    btnRandom.setImageResource(R.drawable.iconsuffle);
+                    player.setShuffled(false);
+                    btnRandom.setTag('0');
+                }
+            }
+        });
 //
-//        btnRandom.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (btnRandom.getTag().equals('0')){
-//                    btnRandom.setImageResource(R.drawable.iconshuffled);
-//                    btnRandom.setTag('1');
-//                }
-//                else {
-//                    btnRandom.setImageResource(R.drawable.iconsuffle);
-//                    btnRandom.setTag('0');
-//                }
-//            }
-//        });
-//
-//        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//            @Override
-//            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-//
-//            }
-//
-//            @Override
-//            public void onStartTrackingTouch(SeekBar seekBar) {
-//
-//            }
-//
-//            @Override
-//            public void onStopTrackingTouch(SeekBar seekBar) {
-//                mediaPlayer.seekTo(seekBar.getProgress());
-//            }
-//        });
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                player.setSeekTo(seekBar.getProgress());
+            }
+        });
     }
 
     private void UpdateTimeSong() {
@@ -297,44 +306,7 @@ public class Activity_play_nhac extends AppCompatActivity {
                 seekBar.setProgress(player.getCurrentPosition());
 
 //                setUpScreen();
-
-
-//                //Kiểm tra thời gian bài hát  nếu kết thúc thì chuyển tiếp
-//                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//                    @Override
-//                    public void onCompletion(MediaPlayer mp) {
-//                        if (mediaPlayer.isLooping()) {
-//                            return;
-//                        }
-//
-//                        position++;
-//                        //Ktra pos có vượt size arraySong
-//                        if (position > arraySongs.size() - 1) {
-//                            position = 0;
-//                        }
-//
-//                        //Random
-//                        if (btnRandom.getTag().equals("1")) {
-//                            Random random = new Random();
-//                            position = random.nextInt(arraySongs.size());
-//                        }
-//
-//                        //Gan bài hát bằng array(pos)
-//                        baiHat = arraySongs.get(position);
-//                        mediaPlayer.stop();
-//                        mediaPlayer.release();
-//
-//                        KhoiTaoMediaPlayer();
-////                        if (btnRepeat.getTag().equals('1')){
-////                            btnRepeat.setImageResource(R.drawable.iconrepeat);
-////                            btnRepeat.setTag('0');
-////                        }
-//                        btnPlay.setImageResource(R.drawable.iconpause);
-//                        SetTimeTotal();
-//                        mediaPlayer.start();
-//                        UpdateTimeSong();
-//                    }
-//                });
+                resetScreen();
 
                 handler.postDelayed(this, 100);
             }

@@ -31,6 +31,7 @@ import com.example.nhom9.musicplayer.R;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MediaPlayerService extends Service implements MediaPlayer.OnCompletionListener,
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnSeekCompleteListener,
@@ -76,6 +77,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     private ArrayList<BaiHat> listBaiHat;
     private int baihatIndex = -1;
     private BaiHat activeBaiHat; //an object on the currently playing audio
+
+    private boolean isRandom;
 
     // Binder given to clients
     private final IBinder iBinder = new LocalBinder();
@@ -199,7 +202,16 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
      */
     @Override
     public void onCompletion(MediaPlayer mp) {
-        skipToNext();
+        if(mediaPlayer.isLooping()){
+            resetMediaForLooping();
+        }else {
+            if(isRandom){
+                processShuffled();
+            }
+            else {
+                skipToNext();
+            }
+        }
         updateMetaData();
         buildNotification(PlaybackStatus.PLAYING);
 //        //Invoked when playback of a media source has completed.
@@ -787,5 +799,32 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
 
+    public void setMediaPlayerLooping(boolean looping){
+        mediaPlayer.setLooping(looping);
+    }
+
+    private void resetMediaForLooping(){
+        //reset mediaPlayer
+        mediaPlayer.reset();
+        initMediaPlayer();
+    }
+
+    public void setSeekTo(int position){
+        mediaPlayer.seekTo(position);
+    }
+
+    public void setShuffled(boolean shuffled){
+        isRandom = shuffled;
+    }
+
+    public void processShuffled(){
+        Random random = new Random();
+        baihatIndex = random.nextInt(listBaiHat.size());
+        activeBaiHat = listBaiHat.get(baihatIndex);
+        stopMedia();
+        //reset mediaPlayer
+        mediaPlayer.reset();
+        initMediaPlayer();
+    }
 
 }

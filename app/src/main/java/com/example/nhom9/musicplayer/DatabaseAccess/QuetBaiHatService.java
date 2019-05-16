@@ -16,11 +16,11 @@ public class QuetBaiHatService extends DbHelper {
     private static ArrayList<String> MEDIA_PATHs = new ArrayList<>();
 
     static {
-        MEDIA_PATHs.add(Environment.getExternalStorageDirectory().getPath()+ "/Download/"); //Music
+        MEDIA_PATHs.add(Environment.getExternalStorageDirectory().getPath()+ "/Music/"); //Music
 
         File[] fileList = new File("/storage/").listFiles();
         for (File file : fileList) {
-            String musicPath = file.getAbsolutePath() + "/Download/";
+            String musicPath = file.getAbsolutePath() + "/Music/";
             if (file.isDirectory() && new File(musicPath).exists() && file.canRead()){
                 MEDIA_PATHs.add(musicPath);
             }
