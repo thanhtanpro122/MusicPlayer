@@ -86,6 +86,7 @@ public class Activity_play_nhac extends AppCompatActivity {
 
         setUpService();
         XuLyCacNut();
+        setUpScreen();
     }
 
     @Override
@@ -95,6 +96,9 @@ public class Activity_play_nhac extends AppCompatActivity {
             baiHat = Fragment_List_BaiHat.selectedSong;
             if (!player.isCurrentSong(baiHat)) {
                 indexBaiHat = player.setSongIndex(baiHat.getIdBaiHat());
+                baiHat = player.getCurrentBaiHat();
+                Fragment_List_BaiHat.selectedSong = player.getCurrentBaiHat();
+                setUpScreen();
             }
         }
 
@@ -143,9 +147,11 @@ public class Activity_play_nhac extends AppCompatActivity {
     };
 
     public void setUpScreen(){
-        getSupportActionBar().setTitle(baiHat.getTenBaiHat());
-        SetTimeTotal();
-//        UpdateTimeSong();
+        if(player!= null){
+            getSupportActionBar().setTitle(player.getCurrentBaiHat().getTenBaiHat());
+            SetTimeTotal();
+            UpdateTimeSong();
+        }
     }
 
     /**
@@ -280,20 +286,27 @@ public class Activity_play_nhac extends AppCompatActivity {
 //        });
     }
 
-//    private void UpdateTimeSong() {
-//        final Handler handler = new Handler();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (mediaPlayer == null) {
-//                    return;
-//                }
-//
-//                SimpleDateFormat dinhDangGio = new SimpleDateFormat("mm:ss");
-//                txtTime.setText(dinhDangGio.format(mediaPlayer.getCurrentPosition()));
-//
-//                seekBar.setProgress(mediaPlayer.getCurrentPosition());
-//
+    private void UpdateTimeSong() {
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (player.isMediaPlayerNull()) {
+                    return;
+                }
+                if (!player.getMediaPlayerState()) {
+                    btnPlay.setImageResource(R.drawable.iconplay);
+                } else {
+                    btnPlay.setImageResource(R.drawable.iconpause);
+                }
+                SimpleDateFormat dinhDangGio = new SimpleDateFormat("mm:ss");
+                txtTime.setText(dinhDangGio.format(player.getCurrentPosition()));
+
+                seekBar.setProgress(player.getCurrentPosition());
+
+//                setUpScreen();
+
+
 //                //Kiểm tra thời gian bài hát  nếu kết thúc thì chuyển tiếp
 //                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 //                    @Override
@@ -330,11 +343,11 @@ public class Activity_play_nhac extends AppCompatActivity {
 //                        UpdateTimeSong();
 //                    }
 //                });
-//
-//                handler.postDelayed(this, 500);
-//            }
-//        }, 100);
-//    }
+
+                handler.postDelayed(this, 100);
+            }
+        }, 100);
+    }
 
     public void SetTimeTotal() {
         SimpleDateFormat dinhDanggio = new SimpleDateFormat("mm:ss");

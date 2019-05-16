@@ -199,12 +199,15 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
      */
     @Override
     public void onCompletion(MediaPlayer mp) {
-        //Invoked when playback of a media source has completed.
-        stopMedia();
-
-        removeNotification();
-        //stop the service
-        stopSelf();
+        skipToNext();
+        updateMetaData();
+        buildNotification(PlaybackStatus.PLAYING);
+//        //Invoked when playback of a media source has completed.
+//        stopMedia();
+//
+//        removeNotification();
+//        //stop the service
+//        stopSelf();
     }
 
     //Handle errors
@@ -568,8 +571,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                 .setLargeIcon(largeIcon)
                 .setSmallIcon(android.R.drawable.stat_sys_headset)
                 // Set Notification content information
-                .setContentText("Đây là tên ca sĩ") //activeAudio.getArtist()
-                .setContentTitle("Đây là tên Album") //activeAudio.getAlbum()
+                .setContentText("Tên ca sĩ : "+activeBaiHat.getIdCasi()) //activeAudio.getArtist()
+                .setContentTitle(activeBaiHat.getTenBaiHat()) //activeAudio.getAlbum()
                 .setContentInfo(activeBaiHat.getTenBaiHat())
                 // Add playback actions
                 .addAction(android.R.drawable.ic_media_previous, "previous", playbackAction(3))
@@ -651,8 +654,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                 BaiHatService service = new BaiHatService(getApplicationContext());
                 listBaiHat = service.layDanhSachBaiHat();
             }catch (Exception ignore){}
-            baihatIndex = getSongIndex(Activity_play_nhac.baiHat.getIdBaiHat());
-
+            if(getCurrentBaiHat()==null){
+                baihatIndex = getSongIndex(Activity_play_nhac.baiHat.getIdBaiHat());
+            }
             if (baihatIndex != -1 && baihatIndex < listBaiHat.size()) {
                 //index is in a valid range
                 activeBaiHat = listBaiHat.get(baihatIndex);
@@ -707,11 +711,17 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     public boolean btnPlayStopClick(){
         if(mediaPlayer.isPlaying()){
             pauseMedia();
+            buildNotification(PlaybackStatus.PAUSED);
             return true;
         }else{
             resumeMedia();
+            buildNotification(PlaybackStatus.PLAYING);
             return false;
         }
+    }
+
+    public boolean getMediaPlayerState(){
+        return mediaPlayer.isPlaying();
     }
 
     public int getDuration(){
@@ -758,6 +768,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
     public int getCurrentPosition(){
         return mediaPlayer.getCurrentPosition();
+    }
+
+    public boolean isMediaPlayerNull(){
+        return mediaPlayer == null;
     }
 
     public void btnNextClick(){
