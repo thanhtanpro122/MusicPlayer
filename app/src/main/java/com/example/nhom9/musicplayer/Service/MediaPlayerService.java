@@ -748,6 +748,24 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         return baihatIndex;
     }
 
+    public int getCurrentIndex(){
+        return baihatIndex;
+    }
+
+    public BaiHat getCurrentBaiHat(){
+        return activeBaiHat;
+    }
+
+    public int getCurrentPosition(){
+        return mediaPlayer.getCurrentPosition();
+    }
+
+    public void btnNextClick(){
+        skipToNext();
+        updateMetaData();
+        buildNotification(PlaybackStatus.PLAYING);
+    }
+
 
 
 }

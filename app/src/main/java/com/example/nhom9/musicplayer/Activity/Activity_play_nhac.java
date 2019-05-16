@@ -43,9 +43,9 @@ public class Activity_play_nhac extends AppCompatActivity {
     ImageButton btnRandom, btnPreview, btnPlay, btnNext, btnRepeat;
 
     public static BaiHat baiHat;
-    public int indexBaiHat;
+    public static int indexBaiHat;
 
-    ArrayList<BaiHat> arraySongs;
+//    ArrayList<BaiHat> arraySongs;
 
 //    int position = 0;
 //    static MediaPlayer mediaPlayer;
@@ -57,7 +57,7 @@ public class Activity_play_nhac extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play_nhac);
         AnhXa();
-        AddSong();
+//        AddSong();
 
         if (savedInstanceState != null) {
             onRestoreInstanceState(savedInstanceState);
@@ -132,7 +132,7 @@ public class Activity_play_nhac extends AppCompatActivity {
             MediaPlayerService.LocalBinder binder = (MediaPlayerService.LocalBinder) service;
             player = binder.getService();
             serviceBound = true;
-
+            setUpScreen();
             Toast.makeText(Activity_play_nhac.this, "Service Bound", Toast.LENGTH_SHORT).show();
         }
 
@@ -141,6 +141,12 @@ public class Activity_play_nhac extends AppCompatActivity {
             serviceBound = false;
         }
     };
+
+    public void setUpScreen(){
+        getSupportActionBar().setTitle(baiHat.getTenBaiHat());
+        SetTimeTotal();
+        UpdateTimeSong();
+    }
 
     /**
      * Add the following methods to MainActivity to fix it.
@@ -189,30 +195,22 @@ public class Activity_play_nhac extends AppCompatActivity {
 //                    mediaPlayer.start();
                     btnPlay.setImageResource(R.drawable.iconpause);
                 }
-                SetTimeTotal();
+//                SetTimeTotal();
 //                UpdateTimeSong();
             }
         });
 
 
-//        btnNext.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                position++;
-//                if (position > arraySongs.size() - 1) {
-//                    position = 0;
-//                }
-//                mediaPlayer.stop();
-//                mediaPlayer.release();
-//                baiHat = arraySongs.get(position);
-//                getSupportActionBar().setTitle(baiHat.getTenBaiHat());
-//                KhoiTaoMediaPlayer();
-//                btnPlay.setImageResource(R.drawable.iconpause);
-//                SetTimeTotal();
-//                mediaPlayer.start();
-//                UpdateTimeSong();
-//            }
-//        });
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                player.btnNextClick();
+                btnPlay.setImageResource(R.drawable.iconpause);
+                baiHat = player.getCurrentBaiHat();
+                indexBaiHat = player.getCurrentIndex();
+                setUpScreen();
+            }
+        });
 //
 //        btnPreview.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -282,63 +280,63 @@ public class Activity_play_nhac extends AppCompatActivity {
 //        });
     }
 
-//    private void UpdateTimeSong() {
-//        final Handler handler = new Handler();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (mediaPlayer == null) {
-//                    return;
-//                }
-//
-//                SimpleDateFormat dinhDangGio = new SimpleDateFormat("mm:ss");
-//                txtTime.setText(dinhDangGio.format(mediaPlayer.getCurrentPosition()));
-//
-//                seekBar.setProgress(mediaPlayer.getCurrentPosition());
-//
-//                //Kiểm tra thời gian bài hát  nếu kết thúc thì chuyển tiếp
-//                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//                    @Override
-//                    public void onCompletion(MediaPlayer mp) {
-//                        if (mediaPlayer.isLooping()) {
-//                            return;
-//                        }
-//
-//                        position++;
-//                        //Ktra pos có vượt size arraySong
-//                        if (position > arraySongs.size() - 1) {
-//                            position = 0;
-//                        }
-//
-//                        //Random
-//                        if (btnRandom.getTag().equals("1")) {
-//                            Random random = new Random();
-//                            position = random.nextInt(arraySongs.size());
-//                        }
-//
-//                        //Gan bài hát bằng array(pos)
-//                        baiHat = arraySongs.get(position);
-//                        mediaPlayer.stop();
-//                        mediaPlayer.release();
-//
-//                        KhoiTaoMediaPlayer();
-////                        if (btnRepeat.getTag().equals('1')){
-////                            btnRepeat.setImageResource(R.drawable.iconrepeat);
-////                            btnRepeat.setTag('0');
-////                        }
-//                        btnPlay.setImageResource(R.drawable.iconpause);
-//                        SetTimeTotal();
-//                        mediaPlayer.start();
-//                        UpdateTimeSong();
-//                    }
-//                });
-//
-//                handler.postDelayed(this, 500);
-//            }
-//        }, 100);
-//    }
+    private void UpdateTimeSong() {
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (mediaPlayer == null) {
+                    return;
+                }
 
-    private void SetTimeTotal() {
+                SimpleDateFormat dinhDangGio = new SimpleDateFormat("mm:ss");
+                txtTime.setText(dinhDangGio.format(mediaPlayer.getCurrentPosition()));
+
+                seekBar.setProgress(mediaPlayer.getCurrentPosition());
+
+                //Kiểm tra thời gian bài hát  nếu kết thúc thì chuyển tiếp
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        if (mediaPlayer.isLooping()) {
+                            return;
+                        }
+
+                        position++;
+                        //Ktra pos có vượt size arraySong
+                        if (position > arraySongs.size() - 1) {
+                            position = 0;
+                        }
+
+                        //Random
+                        if (btnRandom.getTag().equals("1")) {
+                            Random random = new Random();
+                            position = random.nextInt(arraySongs.size());
+                        }
+
+                        //Gan bài hát bằng array(pos)
+                        baiHat = arraySongs.get(position);
+                        mediaPlayer.stop();
+                        mediaPlayer.release();
+
+                        KhoiTaoMediaPlayer();
+//                        if (btnRepeat.getTag().equals('1')){
+//                            btnRepeat.setImageResource(R.drawable.iconrepeat);
+//                            btnRepeat.setTag('0');
+//                        }
+                        btnPlay.setImageResource(R.drawable.iconpause);
+                        SetTimeTotal();
+                        mediaPlayer.start();
+                        UpdateTimeSong();
+                    }
+                });
+
+                handler.postDelayed(this, 500);
+            }
+        }, 100);
+    }
+
+    public void SetTimeTotal() {
         SimpleDateFormat dinhDanggio = new SimpleDateFormat("mm:ss");
         txtTotalTime.setText(dinhDanggio.format(player.getDuration()));
         //Gán max của skSong = thoi gian phát
@@ -394,13 +392,13 @@ public class Activity_play_nhac extends AppCompatActivity {
 //        }
 //    }
 
-    private void AddSong() {
-        try {
-            BaiHatService service = new BaiHatService(getApplicationContext());
-            arraySongs = service.layDanhSachBaiHat();
-        } catch (Exception ignored) {
-        }
-    }
+//    private void AddSong() {
+//        try {
+//            BaiHatService service = new BaiHatService(getApplicationContext());
+//            arraySongs = service.layDanhSachBaiHat();
+//        } catch (Exception ignored) {
+//        }
+//    }
 
     private void AnhXa() {
         txtTime = (TextView) findViewById(R.id.txt_time_song);
