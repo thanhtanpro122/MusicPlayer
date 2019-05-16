@@ -50,7 +50,7 @@ public class SongPlaylistAdapter extends RecyclerView.Adapter<SongPlaylistAdapte
     @Override
     public SongViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int position) {
         try {
-            View view = inflater.inflate(R.layout.row_list_baihat, viewGroup, false);
+            View view = inflater.inflate(R.layout.row_list_baihat, null, false);
             return new SongViewHolder(view);
         } catch (Exception e) {
             e.printStackTrace();

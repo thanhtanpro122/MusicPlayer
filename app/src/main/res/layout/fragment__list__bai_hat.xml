@@ -21,6 +21,6 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_play_baihat"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="630dp" />
 
 </LinearLayout>

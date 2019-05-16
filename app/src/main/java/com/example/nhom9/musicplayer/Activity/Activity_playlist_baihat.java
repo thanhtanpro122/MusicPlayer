@@ -32,6 +32,7 @@ public class Activity_playlist_baihat extends AppCompatActivity {
         rclSongPlaylist = findViewById(R.id.rcl_song_Playlist);
         rclSongPlaylist.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         rclSongPlaylist.setHasFixedSize(true);
+        txtNamePlaylist.setText(playList.getTenPlayList());
 
         try {
             service = new PlayListService(getApplicationContext());
