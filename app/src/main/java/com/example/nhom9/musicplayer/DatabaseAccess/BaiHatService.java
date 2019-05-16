@@ -40,6 +40,27 @@ public class BaiHatService extends DbHelper {
         return null;
     }
 
+    public ArrayList<BaiHat> timKiemBaiHat(String tenbaihat){
+        ArrayList<BaiHat> dsBaiHat = new ArrayList<>();
+
+        String query = "SELECT * FROM BaiHat where TenBaiHat like '%"+tenbaihat+"%'";
+        Cursor cursor = database.rawQuery(query, null);
+
+        BaiHat baiHat;
+        while (cursor.moveToNext()) {
+            baiHat = new BaiHat();
+            baiHat.setIdBaiHat(cursor.getInt(0));
+            baiHat.setTenBaiHat(cursor.getString(1));
+            baiHat.setIdCasi(cursor.getInt(2));
+            baiHat.setTenTacGia(cursor.getString(3));
+            baiHat.setUrlBaiHat(cursor.getString(4));
+            baiHat.setHinhAnh(cursor.getBlob(5));
+            dsBaiHat.add(baiHat);
+        }
+        cursor.close();
+
+        return dsBaiHat;
+    }
 
     @Deprecated
     public void add(BaiHat baiHat) {
