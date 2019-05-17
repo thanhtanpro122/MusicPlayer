@@ -15,14 +15,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
-import android.view.View;
-import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.example.nhom9.musicplayer.Adapter.ViewPageAdapter;
@@ -33,19 +32,20 @@ import com.example.nhom9.musicplayer.Fragment.Fragment_Search_Song;
 import com.example.nhom9.musicplayer.R;
 import com.example.nhom9.musicplayer.Service.MediaPlayerService;
 
-import java.text.SimpleDateFormat;
 
 public class Activity_trang_chu extends AppCompatActivity {
+
+    private final String TAG = "Activity_trang_chu";
 
     public static final String Broadcast_PLAY_NEW_AUDIO = "com.example.nhom9.musicplayer.PlayNewAudio";
 
     private MediaPlayerService player;
     boolean serviceBound = false;
+
     SeekBar collapseSeekbar;
     ImageButton btnPlay;
 
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
-    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,10 +85,15 @@ public class Activity_trang_chu extends AppCompatActivity {
         else {
             loadData();
         }
+    }
 
-        if(player != null) {
-            UpdateTimeSong();
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(Activity_play_nhac.binder != null){
+            player = Activity_play_nhac.binder.getService();
             SetTimeTotal();
+            UpdateTimeSong();
         }
     }
 
@@ -97,20 +102,8 @@ public class Activity_trang_chu extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (player.isMediaPlayerNull()) {
-                    return;
-                }
-                if (!player.getMediaPlayerState()) {
-                    btnPlay.setImageResource(R.drawable.iconplay);
-                } else {
-                    btnPlay.setImageResource(R.drawable.iconpause);
-                }
-
+                Log.i(TAG, "onStart: "+player.getCurrentPosition());
                 collapseSeekbar.setProgress(player.getCurrentPosition());
-
-//                setUpScreen();
-//                resetScreen();
-
                 handler.postDelayed(this, 100);
             }
         }, 100);
@@ -121,6 +114,7 @@ public class Activity_trang_chu extends AppCompatActivity {
         collapseSeekbar.setMax(player.getDuration());
 //        Activity_trang_chu.collapseSeekbar.setProgress(player.getDuration());
     }
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
