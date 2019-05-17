@@ -42,7 +42,7 @@ public class Activity_play_nhac extends AppCompatActivity {
 
     public MediaPlayerService player;
 
-    boolean serviceBound = false;
+    public static boolean serviceBound = false;
 
     TextView txtTime, txtTotalTime;
     SeekBar seekBar;
@@ -158,6 +158,25 @@ public class Activity_play_nhac extends AppCompatActivity {
     public void setUpScreen(){
         if(player!= null){
             getSupportActionBar().setTitle(player.getCurrentBaiHat().getTenBaiHat());
+            if(player.getMediaPlayerState()){
+                btnPlay.setImageResource(R.drawable.iconpause);
+            }else{
+                btnPlay.setImageResource(R.drawable.iconplay);
+            }
+            if(player.isMediaPlayerLooping()){
+                btnRepeat.setImageResource(R.drawable.iconsyned);
+                btnRepeat.setTag('1');
+            }else{
+                btnRepeat.setImageResource(R.drawable.iconrepeat);
+                btnRepeat.setTag('0');
+            }
+            if(player.isMediaPlayerRandom()){
+                btnRandom.setImageResource(R.drawable.iconshuffled);
+                btnRandom.setTag('1');
+            }else{
+                btnRandom.setImageResource(R.drawable.iconsuffle);
+                btnRandom.setTag('0');
+            }
             SetTimeTotal();
             UpdateTimeSong();
         }
@@ -204,7 +223,7 @@ public class Activity_play_nhac extends AppCompatActivity {
             player.stopSelf();
         }
     }
-
+//CODE TODO
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {

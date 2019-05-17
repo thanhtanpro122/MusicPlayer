@@ -28,6 +28,7 @@ import com.example.nhom9.musicplayer.DatabaseAccess.QuetBaiHatService;
 import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.Model.PlayList;
 import com.example.nhom9.musicplayer.R;
+import com.example.nhom9.musicplayer.Service.MediaPlayerService;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -145,7 +146,12 @@ public class Fragment_List_BaiHat extends Fragment {
             baiHatMoi.setTenBaiHat(editTenBaiHat.getText().toString());
             baiHatService.edit(baiHat, baiHatMoi);
             baiHats.clear();
-            baiHats.addAll(baiHatService.layDanhSachBaiHat());
+            ArrayList<BaiHat> listBaiHat = baiHatService.layDanhSachBaiHat();
+            baiHats.addAll(listBaiHat);
+            //Cập nhật lại danh sách bài hát
+            MediaPlayerService player = Activity_play_nhac.binder.getService();
+            player.updateListBaiHat(listBaiHat);
+            //
             adapter.notifyDataSetChanged();
 
         });

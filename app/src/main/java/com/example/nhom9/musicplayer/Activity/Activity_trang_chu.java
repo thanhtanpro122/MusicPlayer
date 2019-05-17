@@ -2,6 +2,7 @@ package com.example.nhom9.musicplayer.Activity;
 
 import android.Manifest;
 import android.content.ComponentName;
+import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -16,6 +17,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -40,7 +42,6 @@ public class Activity_trang_chu extends AppCompatActivity {
     public static final String Broadcast_PLAY_NEW_AUDIO = "com.example.nhom9.musicplayer.PlayNewAudio";
 
     private MediaPlayerService player;
-    boolean serviceBound = false;
 
     SeekBar collapseSeekbar;
     ImageButton btnPlay;
@@ -180,57 +181,26 @@ public class Activity_trang_chu extends AppCompatActivity {
         }
     }
 
-
-    /**
-     * Add the following methods to MainActivity to fix it.
-     * All these methods do is save and restore the state of the serviceBound variable
-     * and unbind the Service when a user closes the app.
-     * @param savedInstanceState
-     */
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putBoolean("ServiceState", serviceBound);
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    /**
-     *
-     * @param savedInstanceState
-     */
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        serviceBound = savedInstanceState.getBoolean("ServiceState");
-    }
-
     /**
      *
      */
     @Override
     protected void onDestroy() {
+        Intent playerIntent = new Intent(this, MediaPlayerService.class);
+        stopService(playerIntent);
         super.onDestroy();
-        if (serviceBound) {
-            unbindService(serviceConnection);
-            //service is active
-            player.stopSelf();
-        }
     }
 
-    //Binding this Client to the AudioPlayer Service
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            MediaPlayerService.LocalBinder binder = (MediaPlayerService.LocalBinder) service;
-            player = binder.getService();
-            serviceBound = true;
-
-            Toast.makeText(Activity_trang_chu.this, "Service Bound", Toast.LENGTH_SHORT).show();
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Intent i=new Intent(this,Activity_trang_chu.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            finish();
+            return true;
         }
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            serviceBound = false;
-        }
-    };
+        return super.onKeyDown(keyCode, event);
+    }
 }

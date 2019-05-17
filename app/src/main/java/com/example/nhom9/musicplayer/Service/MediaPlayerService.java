@@ -26,6 +26,7 @@ import android.util.Log;
 import com.example.nhom9.musicplayer.Activity.Activity_play_nhac;
 import com.example.nhom9.musicplayer.Common.PlaybackStatus;
 import com.example.nhom9.musicplayer.DatabaseAccess.BaiHatService;
+import com.example.nhom9.musicplayer.DatabaseAccess.CaSiService;
 import com.example.nhom9.musicplayer.Fragment.Fragment_List_BaiHat;
 import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.R;
@@ -84,6 +85,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     // Binder given to clients
     private final IBinder iBinder = new LocalBinder();
 
+    private CaSiService caSiService;
+
     public MediaPlayerService() {
     }
 
@@ -105,6 +108,12 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         registerBecomingNoisyReceiver();
         //Listen for new Audio to play -- BroadcastReceiver
         register_playNewAudio();
+
+        try {
+            caSiService = new CaSiService(getApplicationContext());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -205,7 +214,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
      */
     @Override
     public void onCompletion(MediaPlayer mp) {
-        if(mediaPlayer.getCurrentPosition() >= mediaPlayer.getDuration()){
             if(mediaPlayer.isLooping()){
                 resetMediaForLooping();
             }else {
@@ -215,7 +223,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                     skipToNext();
                 }
             }
-        }
         updateMetaData();
         buildNotification(PlaybackStatus.PLAYING);
 //        //Invoked when playback of a media source has completed.
@@ -497,7 +504,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         // Update the current metadata
         mediaSession.setMetadata(new MediaMetadataCompat.Builder()
                 .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, albumArt)
-                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, activeBaiHat.getIdCasi()+"")
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, caSiService.layTenCaSi(activeBaiHat.getIdCasi()))
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, "Không có")
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, activeBaiHat.getTenBaiHat())
                 .build());
@@ -592,7 +599,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                 .setLargeIcon(largeIcon)
                 .setSmallIcon(android.R.drawable.stat_sys_headset)
                 // Set Notification content information
-                .setContentText("Tên ca sĩ : "+activeBaiHat.getIdCasi()) //activeAudio.getArtist()
+                .setContentText("Tên ca sĩ : "+caSiService.layTenCaSi(activeBaiHat.getIdCasi())) //activeAudio.getArtist()
                 .setContentTitle(activeBaiHat.getTenBaiHat()) //activeAudio.getAlbum()
                 .setContentInfo(activeBaiHat.getTenBaiHat())
                 // Add playback actions
@@ -693,7 +700,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             //Could not gain focus
             stopSelf();
         }
-
+//HERE TODO
         if (mediaSessionManager == null) {
             try {
                 initMediaSession();
@@ -743,6 +750,14 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
     public boolean getMediaPlayerState(){
         return mediaPlayer.isPlaying();
+    }
+
+    public boolean isMediaPlayerLooping(){
+        return mediaPlayer.isLooping();
+    }
+
+    public boolean isMediaPlayerRandom(){
+        return isRandom;
     }
 
     public int getDuration(){
@@ -834,6 +849,12 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         //reset mediaPlayer
         mediaPlayer.reset();
         initMediaPlayer();
+    }
+
+    public void updateListBaiHat(ArrayList<BaiHat> listBaiHat){
+        this.listBaiHat = listBaiHat;
+        activeBaiHat = listBaiHat.get(baihatIndex);
+        buildNotification(PlaybackStatus.PLAYING);
     }
 
 }
