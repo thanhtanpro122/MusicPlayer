@@ -26,6 +26,7 @@ import android.util.Log;
 import com.example.nhom9.musicplayer.Activity.Activity_play_nhac;
 import com.example.nhom9.musicplayer.Common.PlaybackStatus;
 import com.example.nhom9.musicplayer.DatabaseAccess.BaiHatService;
+import com.example.nhom9.musicplayer.Fragment.Fragment_List_BaiHat;
 import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.R;
 
@@ -148,6 +149,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         try {
             // Set the data source to the mediaFile location
             mediaPlayer.setDataSource(activeBaiHat.getUrlBaiHat());
+//            Activity_play_nhac.baiHat = activeBaiHat;
+            Fragment_List_BaiHat.selectedSong = activeBaiHat;
         } catch (IOException e) {
             e.printStackTrace();
             stopSelf();
@@ -397,22 +400,24 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         public void onReceive(Context context, Intent intent) {
 
             //Get the new media index form SharedPreferences
-//            baihatIndex = 0;
-            baihatIndex = getSongIndex(Activity_play_nhac.baiHat.getIdBaiHat());
-            if (baihatIndex != -1 && baihatIndex < listBaiHat.size()) {
-                //index is in a valid range
-                activeBaiHat = listBaiHat.get(baihatIndex);
-            } else {
-                stopSelf();
-            }
+            if(!isCurrentSong(Fragment_List_BaiHat.selectedSong)){
+                baihatIndex = getSongIndex(Fragment_List_BaiHat.selectedSong.getIdBaiHat());
+                if (baihatIndex != -1 && baihatIndex < listBaiHat.size()) {
+                    //index is in a valid range
+                    activeBaiHat = listBaiHat.get(baihatIndex);
+                } else {
+                    stopSelf();
+                }
 
-            //A PLAY_NEW_AUDIO action received
-            //reset mediaPlayer to play the new Audio
-            stopMedia();
-            mediaPlayer.reset();
-            initMediaPlayer();
-            updateMetaData();
-            buildNotification(PlaybackStatus.PLAYING);
+
+                //A PLAY_NEW_AUDIO action received
+                //reset mediaPlayer to play the new Audio
+                stopMedia();
+                mediaPlayer.reset();
+                initMediaPlayer();
+                updateMetaData();
+                buildNotification(PlaybackStatus.PLAYING);
+            }
         }
     };
 
@@ -505,6 +510,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             //if last in playlist
             baihatIndex = 0;
             activeBaiHat = listBaiHat.get(baihatIndex);
+
         } else {
             //get next in playlist
             activeBaiHat = listBaiHat.get(++baihatIndex);
@@ -567,10 +573,14 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
         Bitmap largeIcon = BitmapFactory.decodeByteArray(activeBaiHat.getHinhAnh(), 0, activeBaiHat.getHinhAnh().length); //replace with your own image
 
+        Intent intent = new Intent(getApplicationContext(), Activity_play_nhac.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
         // Create a new Notification
         NotificationCompat.Builder notificationBuilder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
                 .setShowWhen(false)
                 // Set the Notification style
+                .setContentIntent(pendingIntent)
                 .setStyle(new NotificationCompat.MediaStyle()
                         // Attach our MediaSession token
                         .setMediaSession(mediaSession.getSessionToken())
@@ -666,7 +676,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                 listBaiHat = service.layDanhSachBaiHat();
             }catch (Exception ignore){}
             if(getCurrentBaiHat()==null){
-                baihatIndex = getSongIndex(Activity_play_nhac.baiHat.getIdBaiHat());
+                baihatIndex = getSongIndex(Fragment_List_BaiHat.selectedSong.getIdBaiHat());
             }
             if (baihatIndex != -1 && baihatIndex < listBaiHat.size()) {
                 //index is in a valid range

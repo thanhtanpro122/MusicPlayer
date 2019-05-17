@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -33,9 +34,13 @@ import java.util.Random;
 
 public class Activity_play_nhac extends AppCompatActivity {
 
+    private final String TAG = "Activity_play_nhac";
+
     public static final String Broadcast_PLAY_NEW_AUDIO = "com.example.nhom9.musicplayer.PlayNewAudio";
 
-    public static MediaPlayerService player;
+    public static MediaPlayerService.LocalBinder binder;
+
+    public MediaPlayerService player;
 
     boolean serviceBound = false;
 
@@ -43,8 +48,8 @@ public class Activity_play_nhac extends AppCompatActivity {
     SeekBar seekBar;
     ImageButton btnRandom, btnPreview, btnPlay, btnNext, btnRepeat;
 
-    public static BaiHat baiHat;
-    public static int indexBaiHat;
+    public BaiHat baiHat;
+    public int indexBaiHat;
 
 //    ArrayList<BaiHat> arraySongs;
 
@@ -56,6 +61,7 @@ public class Activity_play_nhac extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_play_nhac);
         AnhXa();
 //        AddSong();
@@ -85,14 +91,16 @@ public class Activity_play_nhac extends AppCompatActivity {
 
         baiHat = Fragment_List_BaiHat.selectedSong;
 
-        setUpService();
+//        setUpService();
         XuLyCacNut();
-        setUpScreen();
+//        setUpScreen();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        setUpService();
+        setUpScreen();
         if(player!= null){
             baiHat = Fragment_List_BaiHat.selectedSong;
             if (!player.isCurrentSong(baiHat)) {
@@ -134,7 +142,7 @@ public class Activity_play_nhac extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             // We've bound to LocalService, cast the IBinder and get LocalService instance
-            MediaPlayerService.LocalBinder binder = (MediaPlayerService.LocalBinder) service;
+            binder = (MediaPlayerService.LocalBinder) service;
             player = binder.getService();
             serviceBound = true;
             setUpScreen();
@@ -195,6 +203,18 @@ public class Activity_play_nhac extends AppCompatActivity {
             //service is active
             player.stopSelf();
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Log.i(TAG, "onKeyDown: back");
+            Intent intent = new Intent(getApplicationContext(), Activity_trang_chu.class);
+            startActivity(intent);
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
 
     private void XuLyCacNut(){
