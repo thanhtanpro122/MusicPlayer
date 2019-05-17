@@ -13,11 +13,9 @@ public class CaSiService extends DbHelper {
     public CaSiService(Context context) throws IOException {
         super(context);
     }
-    public String getSongArtist(String idSong) {
-        String query = "SELECT Name " +
-                "FROM Artist, Song_Artist " +
-                "WHERE ID = ID_Artist AND ID_Song = ?";
-        Cursor cursor = database.rawQuery(query, new String[]{idSong});
+    public String getSongArtist(int idSong) {
+        String query = "SELECT TenCaSi FROM CaSi, BaiHat_CaSi WHERE CaSi.IdCaSi = BaiHat_CaSi.IdCaSi AND IdBaiHat = ?";
+        Cursor cursor = database.rawQuery(query, new String[]{String.valueOf(idSong)});
         if (cursor.moveToNext()) {
             return cursor.getString(0);
         }
