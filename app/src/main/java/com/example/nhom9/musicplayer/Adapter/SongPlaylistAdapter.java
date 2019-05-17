@@ -74,7 +74,7 @@ public class SongPlaylistAdapter extends RecyclerView.Adapter<SongPlaylistAdapte
                 songViewHolder.txtName.setText(songName);
             }
 
-            String artist = caSiService.getSongArtist(String.valueOf(song.getIdBaiHat()));
+            String artist = caSiService.layTenCaSi(song.getIdBaiHat());
             if (!artist.isEmpty()) {
                 songViewHolder.txtArtist.setText(artist);
             }
@@ -131,8 +131,8 @@ public class SongPlaylistAdapter extends RecyclerView.Adapter<SongPlaylistAdapte
 
             try {
                 imgSong = itemView.findViewById(R.id.img_song);
-                txtName = itemView.findViewById(R.id.txt_song_name);
-                txtArtist = itemView.findViewById(R.id.txt_artist);
+                txtName = itemView.findViewById(R.id.txt_play_nhac_ten_baihat);
+                txtArtist = itemView.findViewById(R.id.txt_play_nhac_ten_casi);
                 btnMore = itemView.findViewById(R.id.btn_more);
                 lyt_parent = itemView.findViewById(R.id.lyt_parent);
             } catch (Exception e) {

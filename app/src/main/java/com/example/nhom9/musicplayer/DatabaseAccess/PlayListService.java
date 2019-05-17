@@ -74,7 +74,7 @@ public class PlayListService extends DbHelper {
         while (cursor.moveToNext()) {
             song = new BaiHat();
             song.setIdBaiHat(cursor.getInt(0));
-            song.setTenTacGia(cursor.getString(1));
+            song.setTenBaiHat(cursor.getString(1));
             song.setIdCasi(cursor.getInt(2));
             song.setTenTacGia(cursor.getString(3));
             song.setUrlBaiHat(cursor.getString(4));
@@ -103,24 +103,36 @@ public class PlayListService extends DbHelper {
 
     public void add(PlayList playList) {
         SimpleDateFormat dateFormat = null;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("vi-VN"));
-        }
+        dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("vi-VN"));
         ContentValues values = new ContentValues();
-        values.put("IdPlayList",String.valueOf(System.currentTimeMillis()));
         values.put("TenPlayList", playList.getTenPlayList());
         values.put("NgayTao",dateFormat.format(new Date()));
         database.insert("PlayList",null,values);
     }
 
-    public  void deletePLaylist(String id)
+    public void addPlaylist_BaiHat(int ID_Playlist, int ID_Song)
+    {
+        try {
+            ContentValues values = new ContentValues();
+            values.put("IdBH", ID_Song );
+            values.put("IdPL",ID_Playlist );
+            database.insert("PlayList_BaiHat", null, values);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+    }
+
+    public  void deletePLaylist(int id)
     {
         try {
             String query = "DELETE FROM Playlist WHERE IdPlayList = ?";
-            database.execSQL(query, new String[]{id});
+            database.execSQL(query, new Integer[]{id});
 
             query = "DELETE FROM PlayList_BaiHat WHERE IdPL = ?";
-            database.execSQL(query, new String[]{id});
+            database.execSQL(query, new Integer[]{id});
 
         }
         catch (Exception e)

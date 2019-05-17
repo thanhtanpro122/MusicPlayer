@@ -155,7 +155,7 @@ public class Fragment_PlayList extends Fragment {
         try {
             service = new PlayListService(getContext());
 
-            service.deletePLaylist(String.valueOf(playList.getIdPlayList()));
+            service.deletePLaylist(playList.getIdPlayList());
             playLists.clear();
             playLists.addAll(service.getAll());
             adapter.notifyDataSetChanged();
