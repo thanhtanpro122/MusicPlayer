@@ -45,7 +45,6 @@ public class Activity_trang_chu extends AppCompatActivity {
     ImageButton btnPlay;
 
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
-    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
