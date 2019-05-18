@@ -29,6 +29,7 @@ import com.example.nhom9.musicplayer.DatabaseAccess.BaiHatService;
 import com.example.nhom9.musicplayer.DatabaseAccess.CaSiService;
 import com.example.nhom9.musicplayer.Fragment.Fragment_List_BaiHat;
 import com.example.nhom9.musicplayer.Model.BaiHat;
+import com.example.nhom9.musicplayer.Model.CaSi;
 import com.example.nhom9.musicplayer.R;
 
 import java.io.IOException;
@@ -772,6 +773,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         return song.getIdBaiHat() == activeBaiHat.getIdBaiHat();
     }
 
+
     public int setSongIndex(int id){
         for(int i = 0;i<listBaiHat.size();i++) {
             if (id == listBaiHat.get(i).getIdBaiHat()) {
@@ -795,6 +797,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     public BaiHat getCurrentBaiHat(){
         return activeBaiHat;
     }
+    public CaSiService getCaSiService(){
+        return caSiService;
+    }
+
 
     public int getCurrentPosition(){
         return mediaPlayer.getCurrentPosition();

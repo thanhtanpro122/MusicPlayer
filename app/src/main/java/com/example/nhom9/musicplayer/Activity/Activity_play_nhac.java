@@ -4,6 +4,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
@@ -166,7 +168,12 @@ public class Activity_play_nhac extends AppCompatActivity {
 
     public void setUpScreen(){
         if(player!= null){
-            getSupportActionBar().setTitle(player.getCurrentBaiHat().getTenBaiHat());
+            //getSupportActionBar().setTitle(player.getCurrentBaiHat().getTenBaiHat());
+            getSupportActionBar().setTitle("");
+            txtSongName.setText(player.getCurrentBaiHat().getTenBaiHat());
+            txtSingerName.setText(player.getCaSiService().layTenCaSi(player.getCurrentBaiHat().getIdCasi()));
+            Bitmap imgbitmap = BitmapFactory.decodeByteArray(player.getCurrentBaiHat().getHinhAnh(), 0, player.getCurrentBaiHat().getHinhAnh().length);
+            profileImg.setImageBitmap(imgbitmap);
             if(player.getMediaPlayerState()){
                 btnPlay.setImageResource(R.drawable.iconpause);
             }else{
@@ -193,7 +200,12 @@ public class Activity_play_nhac extends AppCompatActivity {
 
     public void resetScreen(){
         if(player!= null){
-            getSupportActionBar().setTitle(player.getCurrentBaiHat().getTenBaiHat());
+            //getSupportActionBar().setTitle(player.getCurrentBaiHat().getTenBaiHat());
+            getSupportActionBar().setTitle("");
+            txtSongName.setText(player.getCurrentBaiHat().getTenBaiHat());
+            txtSingerName.setText(player.getCaSiService().layTenCaSi(player.getCurrentBaiHat().getIdCasi()));
+            Bitmap imgbitmap = BitmapFactory.decodeByteArray(player.getCurrentBaiHat().getHinhAnh(), 0, player.getCurrentBaiHat().getHinhAnh().length);
+            profileImg.setImageBitmap(imgbitmap);
             SetTimeTotal();
         }
     }
