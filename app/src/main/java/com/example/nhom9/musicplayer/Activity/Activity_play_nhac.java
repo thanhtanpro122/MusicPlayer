@@ -34,6 +34,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Random;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class Activity_play_nhac extends AppCompatActivity {
 
     private final String TAG = "Activity_play_nhac";
@@ -46,9 +48,10 @@ public class Activity_play_nhac extends AppCompatActivity {
 
     public static boolean serviceBound = false;
 
-    TextView txtTime, txtTotalTime;
+    TextView txtTime, txtTotalTime, txtSongName, txtSingerName;
     SeekBar seekBar;
     ImageButton btnRandom, btnPreview, btnPlay, btnNext, btnRepeat;
+    CircleImageView profileImg;
 
     public int indexBaiHat;
 
@@ -448,6 +451,9 @@ public class Activity_play_nhac extends AppCompatActivity {
         btnNext = (ImageButton) findViewById(R.id.btn_next);
         btnRandom=(ImageButton) findViewById(R.id.btn_ngaunhien);
         btnRepeat=(ImageButton) findViewById(R.id.btn_repeat);
+        txtSingerName=(TextView) findViewById(R.id.txt_name_singer);
+        txtSongName=(TextView) findViewById(R.id.txt_name_song);
+        profileImg=(CircleImageView) findViewById(R.id.profile_image);
     }
 
 
