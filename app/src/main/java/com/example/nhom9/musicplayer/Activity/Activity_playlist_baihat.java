@@ -54,24 +54,7 @@ public class Activity_playlist_baihat extends AppCompatActivity {
         txtNamePlaylist.setText(playList.getTenPlayList());
 
         btnPlayAll = findViewById(R.id.btn_play_all);
-        btnPlayAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ArrayList<BaiHat> lstSong = service.getSongList(String.valueOf(playList.getIdPlayList()));
-                Intent intent = new Intent(getApplicationContext(), Activity_playlist_baihat.class);
-                if(Activity_play_nhac.currentPlayList != null){
-                    Activity_play_nhac.currentPlayList = lstSong ;
-                }
-                if(Activity_play_nhac.comingBaiHat != null){
-                    Activity_play_nhac.comingBaiHat = lstSong.get(0);
-                }
-                if(Activity_play_nhac.currentPlayList == null && Activity_play_nhac.comingBaiHat == null){
-                    intent.putExtra(Consts.PLAY_LIST, lstSong);
-                    intent.putExtra(Consts.SONG_EXTRA, lstSong.get(0));
-                }
-                startActivity(intent);
-            }
-        });
+
 
         try {
             service = new PlayListService(getApplicationContext());
@@ -124,6 +107,33 @@ public class Activity_playlist_baihat extends AppCompatActivity {
             });
 
             rclSongPlaylist.setAdapter(adapter);
+
+
+            btnPlayAll.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ArrayList<BaiHat> lstSong = service.getSongList(String.valueOf(playList.getIdPlayList()));
+                    Intent playIntent = new Intent(getApplicationContext(), Activity_play_nhac.class);
+
+                    if(Activity_play_nhac.comingBaiHat != null){
+                        Activity_play_nhac.comingBaiHat = lstSong.get(0);
+                    }
+                    if(Activity_play_nhac.currentPlayList != null){
+                        Activity_play_nhac.currentPlayList = lstSong ;
+                    }
+                    if(Activity_play_nhac.comingBaiHat == null && Activity_play_nhac.currentPlayList==null){
+                        playIntent.putExtra(Consts.PLAY_LIST, lstSong);
+                        playIntent.putExtra(Consts.SONG_EXTRA, lstSong.get(0));
+                    }
+
+
+//        playIntent.putExtra(Consts.SONGS_EXTRA, lstSong);
+//        playIntent.putExtra(Consts.SONG_EXTRA, lstSong.get(0));
+//        playIntent.putExtra(Consts.SONG_POSITION_EXTRA, 0);
+
+                    startActivity(playIntent);
+                }
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
