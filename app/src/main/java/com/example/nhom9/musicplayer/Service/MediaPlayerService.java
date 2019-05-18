@@ -599,9 +599,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                 .setLargeIcon(largeIcon)
                 .setSmallIcon(android.R.drawable.stat_sys_headset)
                 // Set Notification content information
-                .setContentText("Tên ca sĩ : "+caSiService.layTenCaSi(activeBaiHat.getIdCasi())) //activeAudio.getArtist()
+                .setContentText("Thể hiện : "+caSiService.layTenCaSi(activeBaiHat.getIdCasi())) //activeAudio.getArtist()
                 .setContentTitle(activeBaiHat.getTenBaiHat()) //activeAudio.getAlbum()
-                .setContentInfo(activeBaiHat.getTenBaiHat())
+//                .setContentInfo(activeBaiHat.getTenBaiHat())
                 // Add playback actions
                 .addAction(android.R.drawable.ic_media_previous, "previous", playbackAction(3))
                 .addAction(notificationAction, "pause", play_pauseAction)
