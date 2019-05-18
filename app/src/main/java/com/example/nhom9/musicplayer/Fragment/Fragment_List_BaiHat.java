@@ -23,6 +23,7 @@ import android.widget.EditText;
 
 import com.example.nhom9.musicplayer.Activity.Activity_play_nhac;
 import com.example.nhom9.musicplayer.Adapter.PlayNhacAdapter;
+import com.example.nhom9.musicplayer.Common.Consts;
 import com.example.nhom9.musicplayer.DatabaseAccess.BaiHatService;
 import com.example.nhom9.musicplayer.DatabaseAccess.PlayListService;
 import com.example.nhom9.musicplayer.DatabaseAccess.QuetBaiHatService;
@@ -42,13 +43,14 @@ public class Fragment_List_BaiHat extends Fragment {
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
     private EditText edtTitle;
     private TextInputLayout tilTitle;
+
     BaiHatService baiHatService;
     private ArrayList<BaiHat> baiHats;
     private  ArrayList<PlayList> playLists;
     private PlayListService playlistService;
     PlayNhacAdapter adapter;
 
-    public static BaiHat selectedSong;
+//    public static BaiHat selectedSong;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -70,6 +72,7 @@ public class Fragment_List_BaiHat extends Fragment {
 //        else {
 //            loadData(view);
 //        }
+
         return view;
     }
 
@@ -89,9 +92,18 @@ public class Fragment_List_BaiHat extends Fragment {
 
                 adapter.setOnItemClickListener(new PlayNhacAdapter.ItemClickListener() {
                     @Override
-                    public void onClick(View view, BaiHat baiHat, int pos) {
-                        selectedSong = baiHat;
+                    public void onClick(View view, BaiHat baiHat) {
                         Intent intent = new Intent(getContext(), Activity_play_nhac.class);
+                        if(Activity_play_nhac.comingBaiHat != null){
+                            Activity_play_nhac.comingBaiHat = baiHat;
+                        }
+                        if(Activity_play_nhac.currentPlayList != null){
+                            Activity_play_nhac.currentPlayList = baiHatService.layDanhSachBaiHat() ;
+                        }
+                        if(Activity_play_nhac.comingBaiHat == null && Activity_play_nhac.currentPlayList==null){
+                            intent.putExtra(Consts.PLAY_LIST, baiHatService.layDanhSachBaiHat());
+                            intent.putExtra(Consts.SONG_EXTRA, baiHat);
+                        }
                         startActivity(intent);
                     }
                 });
@@ -101,8 +113,16 @@ public class Fragment_List_BaiHat extends Fragment {
                         switch (item.getItemId()) {
                             case R.id.menu_item_play:
                                 Intent intent = new Intent(getContext(), Activity_play_nhac.class);
-                                intent.putExtra("song", song);
-
+                                if(Activity_play_nhac.comingBaiHat != null){
+                                    Activity_play_nhac.comingBaiHat = song;
+                                }
+                                if(Activity_play_nhac.currentPlayList != null){
+                                    Activity_play_nhac.currentPlayList = baiHatService.layDanhSachBaiHat() ;
+                                }
+                                if(Activity_play_nhac.comingBaiHat == null && Activity_play_nhac.currentPlayList==null){
+                                    intent.putExtra(Consts.PLAY_LIST, baiHatService.layDanhSachBaiHat());
+                                    intent.putExtra(Consts.SONG_EXTRA, song);
+                                }
                                 startActivity(intent);
                                 break;
                             case R.id.menu_item_them_playlist:

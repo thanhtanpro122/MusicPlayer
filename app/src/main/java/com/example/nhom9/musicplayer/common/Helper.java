@@ -1,4 +1,4 @@
-package com.example.nhom9.musicplayer.common;
+package com.example.nhom9.musicplayer.Common;
 
 import android.content.Context;
 import android.widget.Toast;

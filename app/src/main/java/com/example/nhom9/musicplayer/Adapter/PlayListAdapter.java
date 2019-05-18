@@ -68,7 +68,7 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.PlayLi
             playListViewHolder.parent.setOnClickListener(view ->{
                 if(onItemClick!=null)
                 {
-                    onItemClick.onItemClick(view,playList,position);
+                    onItemClick.onItemClick(view,playList);
                 }
             });
 
@@ -116,7 +116,7 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.PlayLi
     }
 
     public interface OnItemClickListener {
-        void onItemClick(View view, PlayList playList, int position);
+        void onItemClick(View view, PlayList playList);
     }
 
     public interface OnMoreItemClickListener {

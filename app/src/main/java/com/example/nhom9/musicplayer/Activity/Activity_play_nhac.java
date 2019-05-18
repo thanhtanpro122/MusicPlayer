@@ -22,12 +22,14 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.nhom9.musicplayer.Common.Consts;
 import com.example.nhom9.musicplayer.DatabaseAccess.BaiHatService;
 import com.example.nhom9.musicplayer.Fragment.Fragment_List_BaiHat;
 import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.R;
 import com.example.nhom9.musicplayer.Service.MediaPlayerService;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Random;
@@ -48,15 +50,12 @@ public class Activity_play_nhac extends AppCompatActivity {
     SeekBar seekBar;
     ImageButton btnRandom, btnPreview, btnPlay, btnNext, btnRepeat;
 
-    public BaiHat baiHat;
     public int indexBaiHat;
 
-//    ArrayList<BaiHat> arraySongs;
-
-//    int position = 0;
-//    static MediaPlayer mediaPlayer;
-
     Animation animation;
+
+    public static ArrayList<BaiHat> currentPlayList;
+    public static BaiHat comingBaiHat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,8 +87,16 @@ public class Activity_play_nhac extends AppCompatActivity {
 //        XuLyCacNut();
 //        SetTimeTotal();
 //        UpdateTimeSong();
-
-        baiHat = Fragment_List_BaiHat.selectedSong;
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras != null) {
+                comingBaiHat = (BaiHat) extras.getSerializable(Consts.SONG_EXTRA);
+                currentPlayList = (ArrayList<BaiHat>) extras.getSerializable(Consts.PLAY_LIST);
+            }
+        } else {
+            comingBaiHat = (BaiHat) savedInstanceState.getSerializable(Consts.SONG_EXTRA);
+            currentPlayList = (ArrayList<BaiHat>) savedInstanceState.getSerializable(Consts.PLAY_LIST);
+        }
 
 //        setUpService();
         XuLyCacNut();
@@ -102,11 +109,10 @@ public class Activity_play_nhac extends AppCompatActivity {
         setUpService();
         setUpScreen();
         if(player!= null){
-            baiHat = Fragment_List_BaiHat.selectedSong;
-            if (!player.isCurrentSong(baiHat)) {
-                indexBaiHat = player.setSongIndex(baiHat.getIdBaiHat());
-                baiHat = player.getCurrentBaiHat();
-                Fragment_List_BaiHat.selectedSong = player.getCurrentBaiHat();
+            player.updateListBaiHat(currentPlayList);
+            if (!player.isCurrentSong(comingBaiHat)) {
+                indexBaiHat = player.setSongIndex(comingBaiHat.getIdBaiHat());
+                comingBaiHat = player.getCurrentBaiHat();
                 setUpScreen();
             }
         }
@@ -259,7 +265,7 @@ public class Activity_play_nhac extends AppCompatActivity {
             public void onClick(View view) {
                 player.btnNextClick();
                 btnPlay.setImageResource(R.drawable.iconpause);
-                baiHat = player.getCurrentBaiHat();
+                comingBaiHat = player.getCurrentBaiHat();
                 indexBaiHat = player.getCurrentIndex();
                 setUpScreen();
             }
@@ -270,7 +276,7 @@ public class Activity_play_nhac extends AppCompatActivity {
             public void onClick(View view) {
                 player.btnPreviousClick();
                 btnPlay.setImageResource(R.drawable.iconpause);
-                baiHat = player.getCurrentBaiHat();
+                comingBaiHat = player.getCurrentBaiHat();
                 indexBaiHat = player.getCurrentIndex();
                 setUpScreen();
             }

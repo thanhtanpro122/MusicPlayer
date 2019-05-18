@@ -25,7 +25,7 @@
         android:textSize="30sp" />
 
     <Button
-        android:id="@+id/btn_play"
+        android:id="@+id/btn_play_all"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Phát toàn bộ bài hát" />

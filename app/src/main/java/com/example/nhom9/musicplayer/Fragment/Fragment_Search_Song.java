@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.example.nhom9.musicplayer.Activity.Activity_play_nhac;
 import com.example.nhom9.musicplayer.Adapter.PlayNhacAdapter;
+import com.example.nhom9.musicplayer.Common.Consts;
 import com.example.nhom9.musicplayer.DatabaseAccess.BaiHatService;
 import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.R;
@@ -73,9 +74,22 @@ public class Fragment_Search_Song extends Fragment{
 
             adapter.setOnItemClickListener(new PlayNhacAdapter.ItemClickListener() {
                 @Override
-                public void onClick(View view, BaiHat baiHat, int pos) {
-                    Fragment_List_BaiHat.selectedSong = baiHat;
+                public void onClick(View view, BaiHat baiHat) {
                     Intent intent = new Intent(getContext(), Activity_play_nhac.class);
+//                    intent.putExtra(Consts.PLAY_LIST, baiHatService.layDanhSachBaiHat());
+//                    intent.putExtra(Consts.SONG_EXTRA, baiHat);
+
+                    if(Activity_play_nhac.comingBaiHat != null){
+                        Activity_play_nhac.comingBaiHat = baiHat;
+                    }
+                    if(Activity_play_nhac.currentPlayList != null){
+                        Activity_play_nhac.currentPlayList = baiHatService.layDanhSachBaiHat() ;
+                    }
+                    if(Activity_play_nhac.comingBaiHat == null && Activity_play_nhac.currentPlayList==null){
+                        intent.putExtra(Consts.PLAY_LIST, baiHatService.layDanhSachBaiHat());
+                        intent.putExtra(Consts.SONG_EXTRA, baiHat);
+                    }
+
                     startActivity(intent);
                 }
             });

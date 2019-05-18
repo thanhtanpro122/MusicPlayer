@@ -81,7 +81,7 @@ public class SongPlaylistAdapter extends RecyclerView.Adapter<SongPlaylistAdapte
 
             songViewHolder.lyt_parent.setOnClickListener(view -> {
                 if (onItemClick != null) {
-                    onItemClick.onItemClick(view, song, position);
+                    onItemClick.onItemClick(view, song);
                 }
             });
 
@@ -111,7 +111,7 @@ public class SongPlaylistAdapter extends RecyclerView.Adapter<SongPlaylistAdapte
     }
 
     public interface OnItemClickListener {
-        void onItemClick(View view, BaiHat song, int position);
+        void onItemClick(View view, BaiHat song);
     }
 
     public interface OnMoreItemClickListener {

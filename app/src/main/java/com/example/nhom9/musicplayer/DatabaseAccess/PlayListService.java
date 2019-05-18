@@ -141,6 +141,17 @@ public class PlayListService extends DbHelper {
         }
     }
 
+    public void deleteSongFromPlaylist(int idPlayList,int idSong){
+        try {
+            String query = "DELETE FROM PlayList_BaiHat WHERE IdPL = ? AND IdBH = ?";
+            database.execSQL(query, new Integer[]{idPlayList,idSong});
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     public  void rename(int id,String newname)
     {
         try {

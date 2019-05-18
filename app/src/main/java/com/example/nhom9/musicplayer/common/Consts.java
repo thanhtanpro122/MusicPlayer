@@ -1,4 +1,4 @@
-package com.example.nhom9.musicplayer.common;
+package com.example.nhom9.musicplayer.Common;
 
 public class Consts {
     public static final String SONGS_EXTRA = "SONG_LIST";

@@ -159,7 +159,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             // Set the data source to the mediaFile location
             mediaPlayer.setDataSource(activeBaiHat.getUrlBaiHat());
 //            Activity_play_nhac.baiHat = activeBaiHat;
-            Fragment_List_BaiHat.selectedSong = activeBaiHat;
+            Activity_play_nhac.comingBaiHat = activeBaiHat;
         } catch (IOException e) {
             e.printStackTrace();
             stopSelf();
@@ -407,8 +407,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         public void onReceive(Context context, Intent intent) {
 
             //Get the new media index form SharedPreferences
-            if(!isCurrentSong(Fragment_List_BaiHat.selectedSong)){
-                baihatIndex = getSongIndex(Fragment_List_BaiHat.selectedSong.getIdBaiHat());
+            if(!isCurrentSong(Activity_play_nhac.comingBaiHat)){
+                baihatIndex = getSongIndex(Activity_play_nhac.comingBaiHat.getIdBaiHat());
                 if (baihatIndex != -1 && baihatIndex < listBaiHat.size()) {
                     //index is in a valid range
                     activeBaiHat = listBaiHat.get(baihatIndex);
@@ -672,18 +672,12 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
-            //Load data from SharedPreferences
-//            StorageUtil storage = new StorageUtil(getApplicationContext());
-//            audioList = storage.loadAudio();
-//            audioIndex = storage.loadAudioIndex();
-
 
             try{
-                BaiHatService service = new BaiHatService(getApplicationContext());
-                listBaiHat = service.layDanhSachBaiHat();
+                listBaiHat = Activity_play_nhac.currentPlayList;
             }catch (Exception ignore){}
             if(getCurrentBaiHat()==null){
-                baihatIndex = getSongIndex(Fragment_List_BaiHat.selectedSong.getIdBaiHat());
+                baihatIndex = getSongIndex(Activity_play_nhac.comingBaiHat.getIdBaiHat());
             }
             if (baihatIndex != -1 && baihatIndex < listBaiHat.size()) {
                 //index is in a valid range
@@ -853,7 +847,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
 
     public void updateListBaiHat(ArrayList<BaiHat> listBaiHat){
         this.listBaiHat = listBaiHat;
-        activeBaiHat = listBaiHat.get(baihatIndex);
+//        activeBaiHat = listBaiHat.get(setSongIndex());
         buildNotification(PlaybackStatus.PLAYING);
     }
 
