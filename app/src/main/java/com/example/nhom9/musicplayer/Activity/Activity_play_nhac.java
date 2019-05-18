@@ -266,15 +266,10 @@ public class Activity_play_nhac extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (player.btnPlayStopClick()) {
-                    // nếu đang hát
-//                    mediaPlayer.pause();
                     btnPlay.setImageResource(R.drawable.iconplay);
                 } else {
-//                    mediaPlayer.start();
                     btnPlay.setImageResource(R.drawable.iconpause);
                 }
-//                SetTimeTotal();
-//                UpdateTimeSong();
             }
         });
 

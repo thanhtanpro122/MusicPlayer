@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -21,9 +23,12 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.nhom9.musicplayer.Adapter.ViewPageAdapter;
@@ -45,6 +50,8 @@ public class Activity_trang_chu extends AppCompatActivity {
 
     SeekBar collapseSeekbar;
     ImageButton btnPlay;
+    ImageView profileImg;
+    TextView nameSong,nameSinger;
 
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
 
@@ -59,6 +66,9 @@ public class Activity_trang_chu extends AppCompatActivity {
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         btnPlay = (ImageButton) findViewById(R.id.btn_play_collapse);
+        profileImg=(ImageView) findViewById(R.id.profile_image);
+        nameSong=(TextView) findViewById(R.id.txt_name_song);
+        nameSinger=(TextView) findViewById(R.id.txt_name_singer);
         collapseSeekbar = (SeekBar)findViewById(R.id.seekbar_song_collapse);
         collapseSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -74,6 +84,16 @@ public class Activity_trang_chu extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 player.setSeekTo(seekBar.getProgress());
+            }
+        });
+        btnPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (player.btnPlayStopClick()) {
+                    btnPlay.setImageResource(R.drawable.iconplay);
+                } else {
+                    btnPlay.setImageResource(R.drawable.iconpause);
+                }
             }
         });
 
@@ -105,6 +125,10 @@ public class Activity_trang_chu extends AppCompatActivity {
             public void run() {
                 Log.i(TAG, "onStart: "+player.getCurrentPosition());
                 collapseSeekbar.setProgress(player.getCurrentPosition());
+                nameSong.setText(player.getCurrentBaiHat().getTenBaiHat());
+                nameSinger.setText(player.getCaSiService().layTenCaSi(player.getCurrentBaiHat().getIdCasi()));
+                Bitmap imgbitmap = BitmapFactory.decodeByteArray(player.getCurrentBaiHat().getHinhAnh(), 0, player.getCurrentBaiHat().getHinhAnh().length);
+                profileImg.setImageBitmap(imgbitmap);
                 handler.postDelayed(this, 100);
             }
         }, 100);
