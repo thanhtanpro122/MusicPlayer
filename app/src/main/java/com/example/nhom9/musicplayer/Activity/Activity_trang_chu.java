@@ -144,6 +144,12 @@ public class Activity_trang_chu extends AppCompatActivity {
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        Log.i(TAG,"New Intent");
+        super.onNewIntent(intent);
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
 
@@ -179,9 +185,9 @@ public class Activity_trang_chu extends AppCompatActivity {
                 } else {
                     btnPlay.setImageResource(R.drawable.iconpause);
                 }
-                handler.postDelayed(this, 100);
+                handler.postDelayed(this, 1000);
             }
-        }, 100);
+        }, 1000);
     }
 
     public void SetTimeTotal() {
@@ -260,9 +266,9 @@ public class Activity_trang_chu extends AppCompatActivity {
      */
     @Override
     protected void onDestroy() {
-        if(player!=null){
-            player.removeNotification();
-        }
+//        if(player!=null){
+//            player.removeNotification();
+//        }
 //        Intent playerIntent = new Intent(this, MediaPlayerService.class);
 //        stopService(playerIntent);
 
