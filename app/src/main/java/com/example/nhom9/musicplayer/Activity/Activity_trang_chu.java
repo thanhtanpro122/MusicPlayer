@@ -185,9 +185,9 @@ public class Activity_trang_chu extends AppCompatActivity {
                 } else {
                     btnPlay.setImageResource(R.drawable.iconpause);
                 }
-                handler.postDelayed(this, 1000);
+                handler.postDelayed(this, 100);
             }
-        }, 1000);
+        }, 100);
     }
 
     public void SetTimeTotal() {
