@@ -7,73 +7,93 @@
     android:layout_height="match_parent"
     tools:context=".Activity.Activity_trang_chu">
 
-    <FrameLayout
-        android:id="@+id/frame_container"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="472dp"
-        android:layout_gravity="center"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="675dp"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <FrameLayout
+            android:id="@+id/frame_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:orientation="vertical">
+            android:layout_height="490dp"
+            android:layout_gravity="center"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_gravity="bottom"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                </LinearLayout>
 
             </LinearLayout>
-
-        </LinearLayout>
-    </FrameLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="128dp"
-        android:layout_gravity="bottom"
-        android:background="#00050505"
-        android:gravity="top"
-        android:orientation="vertical">
+        </FrameLayout>
 
         <LinearLayout
+            android:id="@+id/musicBar"
             android:layout_width="match_parent"
             android:layout_height="72dp"
             android:background="#AEAEB1"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+            app:layout_constraintTop_toBottomOf="@+id/seekbar_song_collapse">
 
             <ImageView
                 android:id="@+id/profile_image"
                 android:layout_width="60dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:scaleType="centerInside"
-                app:srcCompat="@drawable/martin" />
+                android:scaleType="centerInside" />
 
             <LinearLayout
+                android:id="@+id/linearLayout4"
                 android:layout_width="238dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:orientation="vertical">
 
+                <SeekBar
+                    android:id="@+id/seekbar_song_collapse"
+                    android:layout_width="match_parent"
+                    android:layout_height="6dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="#00000000"
+                    android:backgroundTint="#3F51B5"
+                    android:progressTint="#673AB7"
+                    app:layout_constraintTop_toBottomOf="@+id/frame_container"
+                    tools:layout_editor_absoluteX="27dp" />
+
                 <TextView
                     android:id="@+id/txt_name_song"
-                    android:layout_width="match_parent"
-                    android:layout_height="38dp"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
                     android:gravity="bottom"
                     android:text="TextView"
+                    android:textAlignment="center"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/txt_name_singer"
-                    android:layout_width="match_parent"
+                    android:layout_width="249dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="TextView" />
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:text="TextView"
+                    android:textAlignment="center" />
+
             </LinearLayout>
 
             <ImageButton
@@ -86,29 +106,24 @@
 
         </LinearLayout>
 
-        <SeekBar
-            android:id="@+id/seekbar_song_collapse"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="#00000000"
-            android:backgroundTint="#3F51B5"
-            android:progressTint="#673AB7" />
-
-        <android.support.design.widget.BottomNavigationView
-            android:id="@+id/bottom_navigation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:background="?android:attr/windowBackground"
-            android:foreground="?attr/selectableItemBackground"
-            app:itemBackground="@color/colorPrimary"
-
-            app:itemIconTint="@android:color/white"
-            app:itemTextColor="@android:color/white"
-            app:menu="@menu/bottom_nav_menu">
-
-        </android.support.design.widget.BottomNavigationView>
     </LinearLayout>
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="?android:attr/windowBackground"
+        android:foreground="?attr/selectableItemBackground"
+
+        app:itemBackground="@color/colorPrimary"
+        app:itemIconTint="@android:color/white"
+        app:itemTextColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/bottom_nav_menu"
+        tools:layout_editor_absoluteX="0dp">
+
+    </android.support.design.widget.BottomNavigationView>
 
 
 </android.support.design.widget.CoordinatorLayout>

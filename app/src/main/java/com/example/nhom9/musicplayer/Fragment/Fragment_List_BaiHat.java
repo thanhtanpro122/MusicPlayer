@@ -151,7 +151,12 @@ public class Fragment_List_BaiHat extends Fragment {
         confirmDelete.setPositiveButton("yes", (dialogInterface, i) -> {
             baiHatService.deleteID(baiHat.getIdBaiHat());
             baiHats.clear();
-            baiHats.addAll(baiHatService.layDanhSachBaiHat());
+            ArrayList<BaiHat> listBaiHat = baiHatService.layDanhSachBaiHat();
+            baiHats.addAll(listBaiHat);
+            //Cập nhật lại danh sách bài hát
+            MediaPlayerService player = Activity_play_nhac.binder.getService();
+            player.updateListBaiHat(listBaiHat);
+            //
             adapter.notifyDataSetChanged();
 
         });

@@ -7,25 +7,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Fragment.Fragment_PlayList">
 
-    <TextView
-        android:id="@+id/textView"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:gravity="center"
-        android:text="Danh sách playlist"
-        android:textColor="#b6000000"
-        android:textSize="30sp"
-        android:textStyle="bold" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <android.support.v7.widget.RecyclerView
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:gravity="center"
+            android:text="Danh sách playlist"
+            android:textColor="#b6000000"
+            android:textSize="30sp"
+            android:textStyle="bold" />
 
-        android:id="@+id/rcl_playlist"
-        android:layout_width="match_parent"
-        android:layout_height="686dp"
-        android:layout_gravity="bottom"
-        android:scrollbars="vertical"
-        android:scrollingCache="true" />
+        <android.support.v7.widget.RecyclerView
+
+            android:id="@+id/rcl_playlist"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_add_playlist"

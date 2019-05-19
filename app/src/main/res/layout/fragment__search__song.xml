@@ -9,8 +9,7 @@
     <TextView
         android:id="@+id/textView2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_height="59dp"
         android:gravity="center"
         android:text="Tìm kiếm bài hát"
         android:textColor="#b6000000"

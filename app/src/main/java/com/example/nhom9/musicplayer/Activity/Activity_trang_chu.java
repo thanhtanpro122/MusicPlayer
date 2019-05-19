@@ -25,8 +25,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,6 +54,8 @@ public class Activity_trang_chu extends AppCompatActivity {
     ImageButton btnPlay;
     ImageView profileImg;
     TextView nameSong,nameSinger;
+    LinearLayout musicBar;
+    FrameLayout frameDisplay;
 
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
 
@@ -64,6 +68,10 @@ public class Activity_trang_chu extends AppCompatActivity {
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        musicBar = (LinearLayout) findViewById(R.id.musicBar);
+        frameDisplay = (FrameLayout) findViewById(R.id.frame_container);
+        setHideMusicBar(true);
 
         btnPlay = (ImageButton) findViewById(R.id.btn_play_collapse);
         profileImg=(ImageView) findViewById(R.id.profile_image);
@@ -83,16 +91,30 @@ public class Activity_trang_chu extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                player.setSeekTo(seekBar.getProgress());
+                if(player!= null){
+                    player.setSeekTo(seekBar.getProgress());
+                }
             }
         });
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (player.btnPlayStopClick()) {
-                    btnPlay.setImageResource(R.drawable.iconplay);
-                } else {
-                    btnPlay.setImageResource(R.drawable.iconpause);
+                if(player!=null){
+                    if (player.btnPlayStopClick()) {
+                        btnPlay.setImageResource(R.drawable.iconplay);
+                    } else {
+                        btnPlay.setImageResource(R.drawable.iconpause);
+                    }
+                }
+            }
+        });
+
+        musicBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(Activity_play_nhac.comingBaiHat != null){
+                    Intent intent = new Intent(getApplicationContext(), Activity_play_nhac.class);
+                    startActivity(intent);
                 }
             }
         });
@@ -108,9 +130,23 @@ public class Activity_trang_chu extends AppCompatActivity {
         }
     }
 
+
+    public void setHideMusicBar(boolean flag){
+        int total = 1120;
+        if(flag){
+            musicBar.setVisibility(View.GONE);
+            frameDisplay.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,total));
+        }
+        else {
+            musicBar.setVisibility(View.VISIBLE);
+            frameDisplay.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,total - 140 ));
+        }
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
+
         if(Activity_play_nhac.binder != null){
             player = Activity_play_nhac.binder.getService();
             SetTimeTotal();
@@ -123,12 +159,30 @@ public class Activity_trang_chu extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.i(TAG, "onStart: "+player.getCurrentPosition());
+                if(player.getMediaPlayerState()){
+                    setHideMusicBar(false);
+                }else{
+                    setHideMusicBar(true);
+                }
+
+
                 collapseSeekbar.setProgress(player.getCurrentPosition());
                 nameSong.setText(player.getCurrentBaiHat().getTenBaiHat());
                 nameSinger.setText(player.getCaSiService().layTenCaSi(player.getCurrentBaiHat().getIdCasi()));
-                Bitmap imgbitmap = BitmapFactory.decodeByteArray(player.getCurrentBaiHat().getHinhAnh(), 0, player.getCurrentBaiHat().getHinhAnh().length);
+
+
+                Bitmap imgbitmap = BitmapFactory.decodeResource(getResources(),R.drawable.image5);
+                if(player.getCurrentBaiHat().getHinhAnh()!=null){
+                    imgbitmap = BitmapFactory.decodeByteArray(player.getCurrentBaiHat().getHinhAnh(), 0, player.getCurrentBaiHat().getHinhAnh().length); //replace with medias albumArt
+                }
+
                 profileImg.setImageBitmap(imgbitmap);
+
+                if (!player.getMediaPlayerState()) {
+                    btnPlay.setImageResource(R.drawable.iconplay);
+                } else {
+                    btnPlay.setImageResource(R.drawable.iconpause);
+                }
                 handler.postDelayed(this, 100);
             }
         }, 100);
@@ -210,8 +264,12 @@ public class Activity_trang_chu extends AppCompatActivity {
      */
     @Override
     protected void onDestroy() {
+        if(player!=null){
+            player.removeNotification();
+        }
         Intent playerIntent = new Intent(this, MediaPlayerService.class);
         stopService(playerIntent);
+
         super.onDestroy();
     }
 

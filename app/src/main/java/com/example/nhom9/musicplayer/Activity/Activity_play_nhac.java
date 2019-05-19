@@ -57,8 +57,6 @@ public class Activity_play_nhac extends AppCompatActivity {
 
     public int indexBaiHat;
 
-    Animation animation;
-
     public static ArrayList<BaiHat> currentPlayList;
     public static BaiHat comingBaiHat;
 
@@ -73,9 +71,6 @@ public class Activity_play_nhac extends AppCompatActivity {
         if (savedInstanceState != null) {
             onRestoreInstanceState(savedInstanceState);
         }
-
-        animation = AnimationUtils.loadAnimation(this, R.anim.disc_routate);
-
 
         Toolbar toolbar_play_nhac = findViewById(R.id.toolbar_play_nhac);
         setSupportActionBar(toolbar_play_nhac);
@@ -208,7 +203,10 @@ public class Activity_play_nhac extends AppCompatActivity {
             getSupportActionBar().setTitle("");
             txtSongName.setText(player.getCurrentBaiHat().getTenBaiHat());
             txtSingerName.setText(player.getCaSiService().layTenCaSi(player.getCurrentBaiHat().getIdCasi()));
-            Bitmap imgbitmap = BitmapFactory.decodeByteArray(player.getCurrentBaiHat().getHinhAnh(), 0, player.getCurrentBaiHat().getHinhAnh().length);
+            Bitmap imgbitmap = BitmapFactory.decodeResource(getResources(),R.drawable.image5);
+            if(player.getCurrentBaiHat().getHinhAnh()!=null){
+                imgbitmap = BitmapFactory.decodeByteArray(player.getCurrentBaiHat().getHinhAnh(), 0, player.getCurrentBaiHat().getHinhAnh().length); //replace with medias albumArt
+            }
             profileImg.setImageBitmap(imgbitmap);
             SetTimeTotal();
         }
@@ -243,6 +241,7 @@ public class Activity_play_nhac extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (serviceBound) {
+            player.removeNotification();
             unbindService(serviceConnection);
             //service is active
             player.stopSelf();
@@ -352,7 +351,8 @@ public class Activity_play_nhac extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                player.setSeekTo(seekBar.getProgress());
+                    player.setSeekTo(seekBar.getProgress());
+
 //                player.setSeekTo(Activity_trang_chu.collapseSeekbar.getProgress());
             }
         });

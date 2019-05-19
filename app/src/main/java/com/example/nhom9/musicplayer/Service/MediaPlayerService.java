@@ -501,7 +501,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     private void updateMetaData() {
-        Bitmap albumArt = BitmapFactory.decodeByteArray(activeBaiHat.getHinhAnh(), 0, activeBaiHat.getHinhAnh().length); //replace with medias albumArt
+        Bitmap albumArt = BitmapFactory.decodeResource(getResources(),R.drawable.image5);
+        if(activeBaiHat.getHinhAnh()!=null){
+            albumArt = BitmapFactory.decodeByteArray(activeBaiHat.getHinhAnh(), 0, activeBaiHat.getHinhAnh().length); //replace with medias albumArt
+        }
         // Update the current metadata
         mediaSession.setMetadata(new MediaMetadataCompat.Builder()
                 .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, albumArt)
@@ -606,12 +609,13 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                 // Add playback actions
                 .addAction(android.R.drawable.ic_media_previous, "previous", playbackAction(3))
                 .addAction(notificationAction, "pause", play_pauseAction)
-                .addAction(android.R.drawable.ic_media_next, "next", playbackAction(2));
+                .addAction(android.R.drawable.ic_media_next, "next", playbackAction(2))
+                .setAutoCancel(false);
 
         ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(NOTIFICATION_ID, notificationBuilder.build());
     }
 
-    private void removeNotification() {
+    public void removeNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(NOTIFICATION_ID);
     }
