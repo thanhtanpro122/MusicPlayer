@@ -159,11 +159,7 @@ public class Activity_trang_chu extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if(player.getMediaPlayerState()){
-                    setHideMusicBar(false);
-                }else{
-                    setHideMusicBar(true);
-                }
+                setHideMusicBar(false);
 
 
                 collapseSeekbar.setProgress(player.getCurrentPosition());
@@ -267,8 +263,8 @@ public class Activity_trang_chu extends AppCompatActivity {
         if(player!=null){
             player.removeNotification();
         }
-        Intent playerIntent = new Intent(this, MediaPlayerService.class);
-        stopService(playerIntent);
+//        Intent playerIntent = new Intent(this, MediaPlayerService.class);
+//        stopService(playerIntent);
 
         super.onDestroy();
     }

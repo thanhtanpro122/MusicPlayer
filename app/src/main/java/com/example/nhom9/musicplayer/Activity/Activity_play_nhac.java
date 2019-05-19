@@ -107,7 +107,6 @@ public class Activity_play_nhac extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         setUpService();
-        setUpScreen();
         if(player!= null){
             player.updateListBaiHat(currentPlayList);
             if (!player.isCurrentSong(comingBaiHat)) {
