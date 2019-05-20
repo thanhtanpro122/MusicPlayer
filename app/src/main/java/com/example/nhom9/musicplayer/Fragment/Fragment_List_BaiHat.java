@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.nhom9.musicplayer.Activity.Activity_play_nhac;
 import com.example.nhom9.musicplayer.Adapter.PlayNhacAdapter;
@@ -211,8 +212,14 @@ public class Fragment_List_BaiHat extends Fragment {
         dialogBuilder.setTitle("Mời bạn chọn Playlist:");
         dialogBuilder.setItems(ListName, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
-                playlistService.addPlaylist_BaiHat(playLists.get(item).getIdPlayList(),song.getIdBaiHat());
-                int count  = playlistService.getSongNumber(playLists.get(item).getIdPlayList());
+
+                try{
+                    playlistService.addPlaylist_BaiHat(playLists.get(item).getIdPlayList(),song.getIdBaiHat());
+                    int count  = playlistService.getSongNumber(playLists.get(item).getIdPlayList());
+                }catch (Exception e){
+                    Toast.makeText(getContext(),"Bạn đã có bài hát này trong playlist",Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
