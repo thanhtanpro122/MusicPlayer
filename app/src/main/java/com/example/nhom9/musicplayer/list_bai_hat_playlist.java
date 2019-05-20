@@ -71,7 +71,7 @@ public class list_bai_hat_playlist extends Fragment {
                 public void onMoreItemClick(View view, BaiHat song, MenuItem item) {
                     ArrayList<BaiHat> lstSong = service.getSongList(String.valueOf(playList.getIdPlayList()));
                     switch (item.getItemId()) {
-                        case R.id.menu_item_play:
+                        case R.id.action_play:
                             Intent intent = new Intent(getContext(), Activity_play_nhac.class);
                             if(Activity_play_nhac.comingBaiHat != null){
                                 Activity_play_nhac.comingBaiHat = song;
@@ -106,7 +106,13 @@ public class list_bai_hat_playlist extends Fragment {
         confirmDelete.setPositiveButton("yes", (dialogInterface, i) -> {
             service.deleteSongFromPlaylist(playList.getIdPlayList(),baiHat.getIdBaiHat());
             baiHats.clear();
-            baiHats.addAll(service.getSongList(String.valueOf(playList.getIdPlayList())));
+            ArrayList<BaiHat> baiHats = service.getSongList(String.valueOf(playList.getIdPlayList()));
+            baiHats.addAll(baiHats);
+            if(Activity_play_nhac.currentPlayList != null){
+                if(Activity_play_nhac.currentPlayList != baiHats){
+                    Activity_play_nhac.currentPlayList = baiHats;
+                }
+            }
             adapter.notifyDataSetChanged();
 
         });
