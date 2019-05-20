@@ -132,14 +132,11 @@ public class Activity_trang_chu extends AppCompatActivity {
 
 
     public void setHideMusicBar(boolean flag){
-        int total = 1120;
         if(flag){
             musicBar.setVisibility(View.GONE);
-            frameDisplay.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,total));
         }
         else {
             musicBar.setVisibility(View.VISIBLE);
-            frameDisplay.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,total -140 ));
         }
     }
 
