@@ -1,4 +1,4 @@
-package com.example.nhom9.musicplayer;
+package com.example.nhom9.musicplayer.Fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,12 +21,13 @@ import com.example.nhom9.musicplayer.Common.Consts;
 import com.example.nhom9.musicplayer.DatabaseAccess.PlayListService;
 import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.Model.PlayList;
+import com.example.nhom9.musicplayer.R;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class list_bai_hat_playlist extends Fragment {
+public class Fragment_Playlist_List_BaiHat_ extends Fragment {
 
     private RecyclerView rclSongPlaylist;
     private SongPlaylistAdapter adapter;

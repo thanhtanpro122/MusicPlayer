@@ -1,37 +1,23 @@
 package com.example.nhom9.musicplayer.Activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.nhom9.musicplayer.Adapter.PlayNhacAdapter;
 import com.example.nhom9.musicplayer.Adapter.SongPlaylistAdapter;
 import com.example.nhom9.musicplayer.Common.Consts;
-import com.example.nhom9.musicplayer.DatabaseAccess.BaiHatService;
 import com.example.nhom9.musicplayer.DatabaseAccess.PlayListService;
-import com.example.nhom9.musicplayer.Fragment.Fragment_List_BaiHat;
 import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.Model.PlayList;
 import com.example.nhom9.musicplayer.R;
-import com.example.nhom9.musicplayer.Service.MediaPlayerService;
-import com.example.nhom9.musicplayer.list_bai_hat_playlist;
+import com.example.nhom9.musicplayer.Fragment.Fragment_Playlist_List_BaiHat_;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class Activity_playlist_baihat extends AppCompatActivity {
     private TextView txtNamePlaylist;
@@ -54,7 +40,7 @@ public class Activity_playlist_baihat extends AppCompatActivity {
         txtNamePlaylist.setText(playList.getTenPlayList());
 
         btnPlayAll = findViewById(R.id.btn_play_all);
-        loadFragment(new list_bai_hat_playlist());
+        loadFragment(new Fragment_Playlist_List_BaiHat_());
         btnPlayAll.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
