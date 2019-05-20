@@ -30,9 +30,12 @@
         android:layout_height="wrap_content"
         android:text="Phát toàn bộ bài hát" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rcl_song_Playlist"
+    <FrameLayout
+        android:id="@+id/frame_container_playlist"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"></FrameLayout>
+
 
 </LinearLayout>

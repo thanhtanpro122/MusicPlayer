@@ -139,7 +139,7 @@ public class Activity_trang_chu extends AppCompatActivity {
         }
         else {
             musicBar.setVisibility(View.VISIBLE);
-            frameDisplay.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,total - 140 ));
+            frameDisplay.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,total + 750 ));
         }
     }
 

@@ -2,6 +2,8 @@ package com.example.nhom9.musicplayer.Activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,6 +26,7 @@ import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.Model.PlayList;
 import com.example.nhom9.musicplayer.R;
 import com.example.nhom9.musicplayer.Service.MediaPlayerService;
+import com.example.nhom9.musicplayer.list_bai_hat_playlist;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,13 +35,12 @@ import java.util.Objects;
 
 public class Activity_playlist_baihat extends AppCompatActivity {
     private TextView txtNamePlaylist;
-    private RecyclerView rclSongPlaylist;
     private Button btnPlayAll;
 
     private SongPlaylistAdapter adapter;
 
     private PlayListService service;
-    private PlayList playList;
+    public static PlayList playList;
     private ArrayList<BaiHat> baiHats;
 
     @Override
@@ -48,68 +50,12 @@ public class Activity_playlist_baihat extends AppCompatActivity {
         playList = (PlayList) getIntent().getSerializableExtra(Consts.PLAY_LIST);
 
         txtNamePlaylist = findViewById(R.id.txtName_Playlist);
-        rclSongPlaylist = findViewById(R.id.rcl_song_Playlist);
-        rclSongPlaylist.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        rclSongPlaylist.setHasFixedSize(true);
+
         txtNamePlaylist.setText(playList.getTenPlayList());
 
         btnPlayAll = findViewById(R.id.btn_play_all);
-
-
-        try {
-            service = new PlayListService(getApplicationContext());
-            baiHats = service.getSongList(String.valueOf(playList.getIdPlayList()));
-
-            adapter = new SongPlaylistAdapter(getApplicationContext(), baiHats);
-            adapter.setOnItemClick(new SongPlaylistAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(View view, BaiHat song) {
-                    ArrayList<BaiHat> lstSong = service.getSongList(String.valueOf(playList.getIdPlayList()));
-                    Intent intent = new Intent(getApplicationContext(), Activity_play_nhac.class);
-                    if(Activity_play_nhac.comingBaiHat != null){
-                        Activity_play_nhac.comingBaiHat = song;
-                    }
-                    if(Activity_play_nhac.currentPlayList != null){
-                        Activity_play_nhac.currentPlayList = lstSong ;
-                    }
-                    if(Activity_play_nhac.currentPlayList == null && Activity_play_nhac.comingBaiHat == null){
-                        intent.putExtra(Consts.PLAY_LIST, lstSong);
-                        intent.putExtra(Consts.SONG_EXTRA, song);
-                    }
-
-                    startActivity(intent);
-                }
-            });
-            adapter.setOnMoreItemClick(new SongPlaylistAdapter.OnMoreItemClickListener() {
-                @Override
-                public void onMoreItemClick(View view, BaiHat song, MenuItem item) {
-                    ArrayList<BaiHat> lstSong = service.getSongList(String.valueOf(playList.getIdPlayList()));
-                    switch (item.getItemId()) {
-                        case R.id.menu_item_play:
-                            Intent intent = new Intent(getApplicationContext(), Activity_play_nhac.class);
-                            if(Activity_play_nhac.comingBaiHat != null){
-                                Activity_play_nhac.comingBaiHat = song;
-                            }
-                            if(Activity_play_nhac.currentPlayList != null){
-                                Activity_play_nhac.currentPlayList = lstSong ;
-                            }
-                            if(Activity_play_nhac.currentPlayList == null && Activity_play_nhac.comingBaiHat == null){
-                                intent.putExtra(Consts.PLAY_LIST, lstSong);
-                                intent.putExtra(Consts.SONG_EXTRA, song);
-                            }
-                            startActivity(intent);
-                            break;
-                        case R.id.action_remove:
-                            Delete(song);
-                            break;
-                    }
-                }
-            });
-
-            rclSongPlaylist.setAdapter(adapter);
-
-
-            btnPlayAll.setOnClickListener(new View.OnClickListener() {
+        loadFragment(new list_bai_hat_playlist());
+        btnPlayAll.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     ArrayList<BaiHat> lstSong = service.getSongList(String.valueOf(playList.getIdPlayList()));
@@ -134,24 +80,14 @@ public class Activity_playlist_baihat extends AppCompatActivity {
                     startActivity(playIntent);
                 }
             });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
-    private void Delete(BaiHat baiHat){
-        AlertDialog.Builder confirmDelete = new AlertDialog.Builder(Objects.requireNonNull(getApplicationContext()));
-        confirmDelete.setTitle("Xóa bài hát khỏi Playlist");
-        confirmDelete.setMessage("Bạn có chắc chắn muốn xóa bài hát: "+ baiHat.getTenBaiHat() + " ra khỏi '"+playList.getTenPlayList() +"' ? ");
-        confirmDelete.setPositiveButton("yes", (dialogInterface, i) -> {
-            service.deleteSongFromPlaylist(playList.getIdPlayList(),baiHat.getIdBaiHat());
-            baiHats.clear();
-            baiHats.addAll(service.getSongList(String.valueOf(playList.getIdPlayList())));
-            adapter.notifyDataSetChanged();
-
-        });
-        confirmDelete.setNegativeButton("Hủy bỏ", (dialogInterface, i) -> dialogInterface.dismiss());
-        confirmDelete.show();
+    private void loadFragment(Fragment fragment){
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.frame_container_playlist,fragment );
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
+
 
 }
