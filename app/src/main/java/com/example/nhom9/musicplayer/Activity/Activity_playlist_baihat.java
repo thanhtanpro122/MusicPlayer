@@ -85,7 +85,7 @@ public class Activity_playlist_baihat extends AppCompatActivity {
                 public void onMoreItemClick(View view, BaiHat song, MenuItem item) {
                     ArrayList<BaiHat> lstSong = service.getSongList(String.valueOf(playList.getIdPlayList()));
                     switch (item.getItemId()) {
-                        case R.id.menu_item_play:
+                        case R.id.action_play:
                             Intent intent = new Intent(getApplicationContext(), Activity_play_nhac.class);
                             if(Activity_play_nhac.comingBaiHat != null){
                                 Activity_play_nhac.comingBaiHat = song;

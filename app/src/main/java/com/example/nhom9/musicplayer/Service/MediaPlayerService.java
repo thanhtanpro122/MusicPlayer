@@ -856,7 +856,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     public void updateListBaiHat(ArrayList<BaiHat> listBaiHat){
-        this.listBaiHat = listBaiHat;
+        if(this.listBaiHat != listBaiHat){
+            this.listBaiHat = listBaiHat;
+        }
+
 //        activeBaiHat = listBaiHat.get(setSongIndex());
 //        buildNotification(PlaybackStatus.PLAYING);
     }
