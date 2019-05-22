@@ -17,6 +17,7 @@ import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.Model.PlayList;
 import com.example.nhom9.musicplayer.R;
 import com.example.nhom9.musicplayer.Fragment.list_bai_hat_playlist;
+import com.example.nhom9.musicplayer.Fragment.Fragment_Playlist_List_BaiHat;
 
 import java.util.ArrayList;
 
@@ -41,7 +42,7 @@ public class Activity_playlist_baihat extends AppCompatActivity {
         txtNamePlaylist.setText(playList.getTenPlayList());
 
         btnPlayAll = findViewById(R.id.btn_play_all);
-        loadFragment(new list_bai_hat_playlist());
+        loadFragment(new Fragment_Playlist_List_BaiHat_());
         btnPlayAll.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

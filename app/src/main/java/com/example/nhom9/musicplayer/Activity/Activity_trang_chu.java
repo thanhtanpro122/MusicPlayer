@@ -132,14 +132,11 @@ public class Activity_trang_chu extends AppCompatActivity {
 
 
     public void setHideMusicBar(boolean flag){
-        int total = 1120;
         if(flag){
             musicBar.setVisibility(View.GONE);
-            frameDisplay.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,total));
         }
         else {
             musicBar.setVisibility(View.VISIBLE);
-            frameDisplay.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,total + 750 ));
         }
     }
 
@@ -161,13 +158,11 @@ public class Activity_trang_chu extends AppCompatActivity {
     }
 
     private void UpdateTimeSong() {
+        setHideMusicBar(false);
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                setHideMusicBar(false);
-
-
                 collapseSeekbar.setProgress(player.getCurrentPosition());
                 nameSong.setText(player.getCurrentBaiHat().getTenBaiHat());
                 nameSinger.setText(player.getCaSiService().layTenCaSi(player.getCurrentBaiHat().getIdCasi()));

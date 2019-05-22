@@ -582,7 +582,12 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             play_pauseAction = playbackAction(0);
         }
 
-        Bitmap largeIcon = BitmapFactory.decodeByteArray(activeBaiHat.getHinhAnh(), 0, activeBaiHat.getHinhAnh().length); //replace with your own image
+        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(),R.drawable.image5);
+        if(activeBaiHat.getHinhAnh()!=null){
+            largeIcon = BitmapFactory.decodeByteArray(activeBaiHat.getHinhAnh(), 0, activeBaiHat.getHinhAnh().length); //replace with medias albumArt
+        }
+
+//        Bitmap largeIcon = BitmapFactory.decodeByteArray(activeBaiHat.getHinhAnh(), 0, activeBaiHat.getHinhAnh().length); //replace with your own image
 
         Intent intent = new Intent(getApplicationContext(), Activity_play_nhac.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
