@@ -1,4 +1,4 @@
-package com.example.nhom9.musicplayer;
+package com.example.nhom9.musicplayer.Fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +21,7 @@ import com.example.nhom9.musicplayer.Common.Consts;
 import com.example.nhom9.musicplayer.DatabaseAccess.PlayListService;
 import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.Model.PlayList;
+import com.example.nhom9.musicplayer.R;
 
 import java.io.IOException;
 import java.util.ArrayList;
