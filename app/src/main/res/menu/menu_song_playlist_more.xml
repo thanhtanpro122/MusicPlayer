@@ -5,12 +5,12 @@
     <item
         android:id="@+id/action_play"
         android:orderInCategory="100"
-        android:title="Play"
+        android:title="Play nhạc"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_remove"
         android:orderInCategory="100"
-        android:title="Remove"
+        android:title="Xoá khỏi Playlist"
         app:showAsAction="never" />
 
 </menu>

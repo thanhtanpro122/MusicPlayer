@@ -73,7 +73,7 @@ public class PlayNhacAdapter extends RecyclerView.Adapter<PlayNhacAdapter.ViewHo
             @Override
             public void onClick(View view) {
                 if (onItemClickListener != null) {
-                    onItemClickListener.onClick(view, baihat, i);
+                    onItemClickListener.onClick(view, baihat);
                 }
             }
         });
@@ -119,6 +119,6 @@ public class PlayNhacAdapter extends RecyclerView.Adapter<PlayNhacAdapter.ViewHo
     }
 
     public interface ItemClickListener {
-        void onClick(View view, BaiHat baiHat, int pos);
+        void onClick(View view, BaiHat baiHat);
     }
 }

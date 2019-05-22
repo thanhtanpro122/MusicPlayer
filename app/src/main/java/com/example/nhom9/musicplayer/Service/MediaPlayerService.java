@@ -26,8 +26,10 @@ import android.util.Log;
 import com.example.nhom9.musicplayer.Activity.Activity_play_nhac;
 import com.example.nhom9.musicplayer.Common.PlaybackStatus;
 import com.example.nhom9.musicplayer.DatabaseAccess.BaiHatService;
+import com.example.nhom9.musicplayer.DatabaseAccess.CaSiService;
 import com.example.nhom9.musicplayer.Fragment.Fragment_List_BaiHat;
 import com.example.nhom9.musicplayer.Model.BaiHat;
+import com.example.nhom9.musicplayer.Model.CaSi;
 import com.example.nhom9.musicplayer.R;
 
 import java.io.IOException;
@@ -84,6 +86,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     // Binder given to clients
     private final IBinder iBinder = new LocalBinder();
 
+    private CaSiService caSiService;
+
     public MediaPlayerService() {
     }
 
@@ -105,6 +109,12 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         registerBecomingNoisyReceiver();
         //Listen for new Audio to play -- BroadcastReceiver
         register_playNewAudio();
+
+        try {
+            caSiService = new CaSiService(getApplicationContext());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -150,7 +160,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             // Set the data source to the mediaFile location
             mediaPlayer.setDataSource(activeBaiHat.getUrlBaiHat());
 //            Activity_play_nhac.baiHat = activeBaiHat;
-            Fragment_List_BaiHat.selectedSong = activeBaiHat;
+            Activity_play_nhac.comingBaiHat = activeBaiHat;
         } catch (IOException e) {
             e.printStackTrace();
             stopSelf();
@@ -205,7 +215,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
      */
     @Override
     public void onCompletion(MediaPlayer mp) {
-        if(mediaPlayer.getCurrentPosition() >= mediaPlayer.getDuration()){
             if(mediaPlayer.isLooping()){
                 resetMediaForLooping();
             }else {
@@ -215,7 +224,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                     skipToNext();
                 }
             }
-        }
         updateMetaData();
         buildNotification(PlaybackStatus.PLAYING);
 //        //Invoked when playback of a media source has completed.
@@ -400,8 +408,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         public void onReceive(Context context, Intent intent) {
 
             //Get the new media index form SharedPreferences
-            if(!isCurrentSong(Fragment_List_BaiHat.selectedSong)){
-                baihatIndex = getSongIndex(Fragment_List_BaiHat.selectedSong.getIdBaiHat());
+            if(!isCurrentSong(Activity_play_nhac.comingBaiHat)){
+                baihatIndex = getSongIndex(Activity_play_nhac.comingBaiHat.getIdBaiHat());
                 if (baihatIndex != -1 && baihatIndex < listBaiHat.size()) {
                     //index is in a valid range
                     activeBaiHat = listBaiHat.get(baihatIndex);
@@ -493,11 +501,14 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     private void updateMetaData() {
-        Bitmap albumArt = BitmapFactory.decodeByteArray(activeBaiHat.getHinhAnh(), 0, activeBaiHat.getHinhAnh().length); //replace with medias albumArt
+        Bitmap albumArt = BitmapFactory.decodeResource(getResources(),R.drawable.image5);
+        if(activeBaiHat.getHinhAnh()!=null){
+            albumArt = BitmapFactory.decodeByteArray(activeBaiHat.getHinhAnh(), 0, activeBaiHat.getHinhAnh().length); //replace with medias albumArt
+        }
         // Update the current metadata
         mediaSession.setMetadata(new MediaMetadataCompat.Builder()
                 .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, albumArt)
-                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, activeBaiHat.getIdCasi()+"")
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, caSiService.layTenCaSi(activeBaiHat.getIdCasi()))
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, "Không có")
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, activeBaiHat.getTenBaiHat())
                 .build());
@@ -571,7 +582,12 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             play_pauseAction = playbackAction(0);
         }
 
-        Bitmap largeIcon = BitmapFactory.decodeByteArray(activeBaiHat.getHinhAnh(), 0, activeBaiHat.getHinhAnh().length); //replace with your own image
+        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(),R.drawable.image5);
+        if(activeBaiHat.getHinhAnh()!=null){
+            largeIcon = BitmapFactory.decodeByteArray(activeBaiHat.getHinhAnh(), 0, activeBaiHat.getHinhAnh().length); //replace with medias albumArt
+        }
+
+//        Bitmap largeIcon = BitmapFactory.decodeByteArray(activeBaiHat.getHinhAnh(), 0, activeBaiHat.getHinhAnh().length); //replace with your own image
 
         Intent intent = new Intent(getApplicationContext(), Activity_play_nhac.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
@@ -592,18 +608,19 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
                 .setLargeIcon(largeIcon)
                 .setSmallIcon(android.R.drawable.stat_sys_headset)
                 // Set Notification content information
-                .setContentText("Tên ca sĩ : "+activeBaiHat.getIdCasi()) //activeAudio.getArtist()
+                .setContentText("Thể hiện : "+caSiService.layTenCaSi(activeBaiHat.getIdCasi())) //activeAudio.getArtist()
                 .setContentTitle(activeBaiHat.getTenBaiHat()) //activeAudio.getAlbum()
-                .setContentInfo(activeBaiHat.getTenBaiHat())
+//                .setContentInfo(activeBaiHat.getTenBaiHat())
                 // Add playback actions
                 .addAction(android.R.drawable.ic_media_previous, "previous", playbackAction(3))
                 .addAction(notificationAction, "pause", play_pauseAction)
-                .addAction(android.R.drawable.ic_media_next, "next", playbackAction(2));
+                .addAction(android.R.drawable.ic_media_next, "next", playbackAction(2))
+                .setAutoCancel(false);
 
         ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(NOTIFICATION_ID, notificationBuilder.build());
     }
 
-    private void removeNotification() {
+    public void removeNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(NOTIFICATION_ID);
     }
@@ -665,18 +682,12 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         try {
-            //Load data from SharedPreferences
-//            StorageUtil storage = new StorageUtil(getApplicationContext());
-//            audioList = storage.loadAudio();
-//            audioIndex = storage.loadAudioIndex();
-
 
             try{
-                BaiHatService service = new BaiHatService(getApplicationContext());
-                listBaiHat = service.layDanhSachBaiHat();
+                listBaiHat = Activity_play_nhac.currentPlayList;
             }catch (Exception ignore){}
             if(getCurrentBaiHat()==null){
-                baihatIndex = getSongIndex(Fragment_List_BaiHat.selectedSong.getIdBaiHat());
+                baihatIndex = getSongIndex(Activity_play_nhac.comingBaiHat.getIdBaiHat());
             }
             if (baihatIndex != -1 && baihatIndex < listBaiHat.size()) {
                 //index is in a valid range
@@ -693,7 +704,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             //Could not gain focus
             stopSelf();
         }
-
+//HERE TODO
         if (mediaSessionManager == null) {
             try {
                 initMediaSession();
@@ -745,6 +756,14 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         return mediaPlayer.isPlaying();
     }
 
+    public boolean isMediaPlayerLooping(){
+        return mediaPlayer.isLooping();
+    }
+
+    public boolean isMediaPlayerRandom(){
+        return isRandom;
+    }
+
     public int getDuration(){
         return mediaPlayer.getDuration();
     }
@@ -762,6 +781,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     public boolean isCurrentSong(BaiHat song){
         return song.getIdBaiHat() == activeBaiHat.getIdBaiHat();
     }
+
 
     public int setSongIndex(int id){
         for(int i = 0;i<listBaiHat.size();i++) {
@@ -786,6 +806,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     public BaiHat getCurrentBaiHat(){
         return activeBaiHat;
     }
+    public CaSiService getCaSiService(){
+        return caSiService;
+    }
+
 
     public int getCurrentPosition(){
         return mediaPlayer.getCurrentPosition();
@@ -834,6 +858,15 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         //reset mediaPlayer
         mediaPlayer.reset();
         initMediaPlayer();
+    }
+
+    public void updateListBaiHat(ArrayList<BaiHat> listBaiHat){
+        if(this.listBaiHat != listBaiHat){
+            this.listBaiHat = listBaiHat;
+        }
+
+//        activeBaiHat = listBaiHat.get(setSongIndex());
+//        buildNotification(PlaybackStatus.PLAYING);
     }
 
 }

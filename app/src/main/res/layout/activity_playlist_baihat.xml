@@ -7,6 +7,10 @@
     android:layout_width="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_back_playlist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <ImageView
         android:id="@+id/imgView_Playlist"
@@ -25,14 +29,17 @@
         android:textSize="30sp" />
 
     <Button
-        android:id="@+id/btn_play"
+        android:id="@+id/btn_play_all"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Phát toàn bộ bài hát" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rcl_song_Playlist"
+    <FrameLayout
+        android:id="@+id/frame_container_playlist"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"></FrameLayout>
+
 
 </LinearLayout>

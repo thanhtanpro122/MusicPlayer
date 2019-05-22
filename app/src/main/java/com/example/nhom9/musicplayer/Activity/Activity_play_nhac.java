@@ -4,6 +4,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
@@ -22,15 +24,19 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.nhom9.musicplayer.Common.Consts;
 import com.example.nhom9.musicplayer.DatabaseAccess.BaiHatService;
 import com.example.nhom9.musicplayer.Fragment.Fragment_List_BaiHat;
 import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.R;
 import com.example.nhom9.musicplayer.Service.MediaPlayerService;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Random;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class Activity_play_nhac extends AppCompatActivity {
 
@@ -42,21 +48,17 @@ public class Activity_play_nhac extends AppCompatActivity {
 
     public MediaPlayerService player;
 
-    boolean serviceBound = false;
+    public static boolean serviceBound = false;
 
-    TextView txtTime, txtTotalTime;
+    TextView txtTime, txtTotalTime, txtSongName, txtSingerName;
     SeekBar seekBar;
     ImageButton btnRandom, btnPreview, btnPlay, btnNext, btnRepeat;
+    CircleImageView profileImg;
 
-    public BaiHat baiHat;
     public int indexBaiHat;
 
-//    ArrayList<BaiHat> arraySongs;
-
-//    int position = 0;
-//    static MediaPlayer mediaPlayer;
-
-    Animation animation;
+    public static ArrayList<BaiHat> currentPlayList;
+    public static BaiHat comingBaiHat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,9 +71,6 @@ public class Activity_play_nhac extends AppCompatActivity {
         if (savedInstanceState != null) {
             onRestoreInstanceState(savedInstanceState);
         }
-
-        animation = AnimationUtils.loadAnimation(this, R.anim.disc_routate);
-
 
         Toolbar toolbar_play_nhac = findViewById(R.id.toolbar_play_nhac);
         setSupportActionBar(toolbar_play_nhac);
@@ -88,8 +87,16 @@ public class Activity_play_nhac extends AppCompatActivity {
 //        XuLyCacNut();
 //        SetTimeTotal();
 //        UpdateTimeSong();
-
-        baiHat = Fragment_List_BaiHat.selectedSong;
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras != null) {
+                comingBaiHat = (BaiHat) extras.getSerializable(Consts.SONG_EXTRA);
+                currentPlayList = (ArrayList<BaiHat>) extras.getSerializable(Consts.PLAY_LIST);
+            }
+        } else {
+            comingBaiHat = (BaiHat) savedInstanceState.getSerializable(Consts.SONG_EXTRA);
+            currentPlayList = (ArrayList<BaiHat>) savedInstanceState.getSerializable(Consts.PLAY_LIST);
+        }
 
 //        setUpService();
         XuLyCacNut();
@@ -97,16 +104,20 @@ public class Activity_play_nhac extends AppCompatActivity {
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        Log.i(TAG,"New Intent");
+        super.onNewIntent(intent);
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         setUpService();
-        setUpScreen();
         if(player!= null){
-            baiHat = Fragment_List_BaiHat.selectedSong;
-            if (!player.isCurrentSong(baiHat)) {
-                indexBaiHat = player.setSongIndex(baiHat.getIdBaiHat());
-                baiHat = player.getCurrentBaiHat();
-                Fragment_List_BaiHat.selectedSong = player.getCurrentBaiHat();
+            player.updateListBaiHat(currentPlayList);
+            if (!player.isCurrentSong(comingBaiHat)) {
+                indexBaiHat = player.setSongIndex(comingBaiHat.getIdBaiHat());
+                comingBaiHat = player.getCurrentBaiHat();
                 setUpScreen();
             }
         }
@@ -157,15 +168,51 @@ public class Activity_play_nhac extends AppCompatActivity {
 
     public void setUpScreen(){
         if(player!= null){
-            getSupportActionBar().setTitle(player.getCurrentBaiHat().getTenBaiHat());
-            SetTimeTotal();
+            //getSupportActionBar().setTitle(player.getCurrentBaiHat().getTenBaiHat());
+
+//            getSupportActionBar().setTitle("");
+//            txtSongName.setText(player.getCurrentBaiHat().getTenBaiHat());
+//            txtSingerName.setText(player.getCaSiService().layTenCaSi(player.getCurrentBaiHat().getIdCasi()));
+//            Bitmap imgbitmap = BitmapFactory.decodeByteArray(player.getCurrentBaiHat().getHinhAnh(), 0, player.getCurrentBaiHat().getHinhAnh().length);
+//            profileImg.setImageBitmap(imgbitmap);
+
+            if(player.getMediaPlayerState()){
+                btnPlay.setImageResource(R.drawable.iconpause);
+            }else{
+                btnPlay.setImageResource(R.drawable.iconplay);
+            }
+            if(player.isMediaPlayerLooping()){
+                btnRepeat.setImageResource(R.drawable.iconsyned);
+                btnRepeat.setTag('1');
+            }else{
+                btnRepeat.setImageResource(R.drawable.iconrepeat);
+                btnRepeat.setTag('0');
+            }
+            if(player.isMediaPlayerRandom()){
+                btnRandom.setImageResource(R.drawable.iconshuffled);
+                btnRandom.setTag('1');
+            }else{
+                btnRandom.setImageResource(R.drawable.iconsuffle);
+                btnRandom.setTag('0');
+            }
+
+//            SetTimeTotal();
+//            resetScreen();
             UpdateTimeSong();
         }
     }
 
     public void resetScreen(){
         if(player!= null){
-            getSupportActionBar().setTitle(player.getCurrentBaiHat().getTenBaiHat());
+            //getSupportActionBar().setTitle(player.getCurrentBaiHat().getTenBaiHat());
+            getSupportActionBar().setTitle("");
+            txtSongName.setText(player.getCurrentBaiHat().getTenBaiHat());
+            txtSingerName.setText(player.getCaSiService().layTenCaSi(player.getCurrentBaiHat().getIdCasi()));
+            Bitmap imgbitmap = BitmapFactory.decodeResource(getResources(),R.drawable.image5);
+            if(player.getCurrentBaiHat().getHinhAnh()!=null){
+                imgbitmap = BitmapFactory.decodeByteArray(player.getCurrentBaiHat().getHinhAnh(), 0, player.getCurrentBaiHat().getHinhAnh().length); //replace with medias albumArt
+            }
+            profileImg.setImageBitmap(imgbitmap);
             SetTimeTotal();
         }
     }
@@ -199,12 +246,13 @@ public class Activity_play_nhac extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (serviceBound) {
+//            player.removeNotification();
             unbindService(serviceConnection);
             //service is active
             player.stopSelf();
         }
     }
-
+//CODE TODO
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -222,15 +270,10 @@ public class Activity_play_nhac extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (player.btnPlayStopClick()) {
-                    // nếu đang hát
-//                    mediaPlayer.pause();
                     btnPlay.setImageResource(R.drawable.iconplay);
                 } else {
-//                    mediaPlayer.start();
                     btnPlay.setImageResource(R.drawable.iconpause);
                 }
-//                SetTimeTotal();
-//                UpdateTimeSong();
             }
         });
 
@@ -240,7 +283,7 @@ public class Activity_play_nhac extends AppCompatActivity {
             public void onClick(View view) {
                 player.btnNextClick();
                 btnPlay.setImageResource(R.drawable.iconpause);
-                baiHat = player.getCurrentBaiHat();
+                comingBaiHat = player.getCurrentBaiHat();
                 indexBaiHat = player.getCurrentIndex();
                 setUpScreen();
             }
@@ -251,7 +294,7 @@ public class Activity_play_nhac extends AppCompatActivity {
             public void onClick(View view) {
                 player.btnPreviousClick();
                 btnPlay.setImageResource(R.drawable.iconpause);
-                baiHat = player.getCurrentBaiHat();
+                comingBaiHat = player.getCurrentBaiHat();
                 indexBaiHat = player.getCurrentIndex();
                 setUpScreen();
             }
@@ -313,13 +356,16 @@ public class Activity_play_nhac extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                player.setSeekTo(seekBar.getProgress());
+                    player.setSeekTo(seekBar.getProgress());
+
 //                player.setSeekTo(Activity_trang_chu.collapseSeekbar.getProgress());
             }
         });
     }
 
     private void UpdateTimeSong() {
+
+
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -327,6 +373,18 @@ public class Activity_play_nhac extends AppCompatActivity {
                 if (player.isMediaPlayerNull()) {
                     return;
                 }
+
+
+                if(player!= null){
+                    player.updateListBaiHat(currentPlayList);
+                    if (!player.isCurrentSong(comingBaiHat)) {
+                        indexBaiHat = player.setSongIndex(comingBaiHat.getIdBaiHat());
+                        comingBaiHat = player.getCurrentBaiHat();
+                    }
+                }
+
+
+
                 if (!player.getMediaPlayerState()) {
                     btnPlay.setImageResource(R.drawable.iconplay);
                 } else {
@@ -354,63 +412,6 @@ public class Activity_play_nhac extends AppCompatActivity {
 //        Activity_trang_chu.collapseSeekbar.setProgress(player.getDuration());
     }
 
-//    private void KhoiTaoMediaPlayer() {
-//        if (mediaPlayer != null) {
-//            BaiHat song = (BaiHat) getIntent().getSerializableExtra("song");
-//            if (!mediaPlayer.isPlaying()) {
-//                baiHat = song;
-//
-//                for (int i = 0; i < arraySongs.size(); i++) {
-//                    if (arraySongs.get(i).getIdBaiHat() == baiHat.getIdBaiHat()) {
-//                        position = i;
-//                        break;
-//                    }
-//                }
-//                mediaPlayer.release();
-//                mediaPlayer = MediaPlayer.create(Activity_play_nhac.this, Uri.parse(baiHat.getUrlBaiHat()));
-//                mediaPlayer.start();
-//                getSupportActionBar().setTitle(baiHat.getTenBaiHat());
-//            } else {
-//                if (baiHat.getIdBaiHat() != song.getIdBaiHat()) {
-//                    baiHat = song;
-//
-//                    for (int i = 0; i < arraySongs.size(); i++) {
-//                        if (arraySongs.get(i).getIdBaiHat() == baiHat.getIdBaiHat()) {
-//                            position = i;
-//                            break;
-//                        }
-//                    }
-//                    mediaPlayer.release();
-//                    mediaPlayer = MediaPlayer.create(Activity_play_nhac.this, Uri.parse(baiHat.getUrlBaiHat()));
-//                    mediaPlayer.start();
-//                    getSupportActionBar().setTitle(baiHat.getTenBaiHat());
-//                } else {
-//                    getSupportActionBar().setTitle(baiHat.getTenBaiHat());
-//                }
-//            }
-//        } else {
-//            baiHat = (BaiHat) getIntent().getSerializableExtra("song");
-//
-//            for (int i = 0; i < arraySongs.size(); i++) {
-//                if (arraySongs.get(i).getIdBaiHat() == baiHat.getIdBaiHat()) {
-//                    position = i;
-//                    break;
-//                }
-//            }
-//            mediaPlayer = MediaPlayer.create(Activity_play_nhac.this, Uri.parse(baiHat.getUrlBaiHat()));
-//            mediaPlayer.start();
-//            getSupportActionBar().setTitle(baiHat.getTenBaiHat());
-//        }
-//    }
-
-//    private void AddSong() {
-//        try {
-//            BaiHatService service = new BaiHatService(getApplicationContext());
-//            arraySongs = service.layDanhSachBaiHat();
-//        } catch (Exception ignored) {
-//        }
-//    }
-
     private void AnhXa() {
         txtTime = (TextView) findViewById(R.id.txt_time_song);
         txtTotalTime = (TextView) findViewById(R.id.txt_total_time_song);
@@ -423,6 +424,9 @@ public class Activity_play_nhac extends AppCompatActivity {
         btnNext = (ImageButton) findViewById(R.id.btn_next);
         btnRandom=(ImageButton) findViewById(R.id.btn_ngaunhien);
         btnRepeat=(ImageButton) findViewById(R.id.btn_repeat);
+        txtSingerName=(TextView) findViewById(R.id.txt_name_singer);
+        txtSongName=(TextView) findViewById(R.id.txt_name_song);
+        profileImg=(CircleImageView) findViewById(R.id.profile_image);
     }
 
 

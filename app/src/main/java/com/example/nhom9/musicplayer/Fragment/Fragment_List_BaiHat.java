@@ -20,16 +20,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.nhom9.musicplayer.Activity.Activity_play_nhac;
 import com.example.nhom9.musicplayer.Adapter.PlayNhacAdapter;
+import com.example.nhom9.musicplayer.Common.Consts;
 import com.example.nhom9.musicplayer.DatabaseAccess.BaiHatService;
+import com.example.nhom9.musicplayer.DatabaseAccess.PlayListService;
 import com.example.nhom9.musicplayer.DatabaseAccess.QuetBaiHatService;
 import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.Model.PlayList;
 import com.example.nhom9.musicplayer.R;
+import com.example.nhom9.musicplayer.Service.MediaPlayerService;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -39,11 +44,14 @@ public class Fragment_List_BaiHat extends Fragment {
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
     private EditText edtTitle;
     private TextInputLayout tilTitle;
+
     BaiHatService baiHatService;
     private ArrayList<BaiHat> baiHats;
+    private  ArrayList<PlayList> playLists;
+    private PlayListService playlistService;
     PlayNhacAdapter adapter;
 
-    public static BaiHat selectedSong;
+//    public static BaiHat selectedSong;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -65,6 +73,7 @@ public class Fragment_List_BaiHat extends Fragment {
 //        else {
 //            loadData(view);
 //        }
+
         return view;
     }
 
@@ -75,16 +84,27 @@ public class Fragment_List_BaiHat extends Fragment {
 
             try {
                 baiHatService = new BaiHatService(getContext());
+                playlistService= new PlayListService(getContext());
 
                 baiHats = baiHatService.layDanhSachBaiHat();
+                playLists=playlistService.getAll();
 
                 adapter = new PlayNhacAdapter(getContext(), baiHats);
 
                 adapter.setOnItemClickListener(new PlayNhacAdapter.ItemClickListener() {
                     @Override
-                    public void onClick(View view, BaiHat baiHat, int pos) {
-                        selectedSong = baiHat;
+                    public void onClick(View view, BaiHat baiHat) {
                         Intent intent = new Intent(getContext(), Activity_play_nhac.class);
+                        if(Activity_play_nhac.comingBaiHat != null){
+                            Activity_play_nhac.comingBaiHat = baiHat;
+                        }
+                        if(Activity_play_nhac.currentPlayList != null){
+                            Activity_play_nhac.currentPlayList = baiHatService.layDanhSachBaiHat() ;
+                        }
+                        if(Activity_play_nhac.comingBaiHat == null && Activity_play_nhac.currentPlayList==null){
+                            intent.putExtra(Consts.PLAY_LIST, baiHatService.layDanhSachBaiHat());
+                            intent.putExtra(Consts.SONG_EXTRA, baiHat);
+                        }
                         startActivity(intent);
                     }
                 });
@@ -94,12 +114,20 @@ public class Fragment_List_BaiHat extends Fragment {
                         switch (item.getItemId()) {
                             case R.id.menu_item_play:
                                 Intent intent = new Intent(getContext(), Activity_play_nhac.class);
-                                intent.putExtra("song", song);
-
+                                if(Activity_play_nhac.comingBaiHat != null){
+                                    Activity_play_nhac.comingBaiHat = song;
+                                }
+                                if(Activity_play_nhac.currentPlayList != null){
+                                    Activity_play_nhac.currentPlayList = baiHatService.layDanhSachBaiHat() ;
+                                }
+                                if(Activity_play_nhac.comingBaiHat == null && Activity_play_nhac.currentPlayList==null){
+                                    intent.putExtra(Consts.PLAY_LIST, baiHatService.layDanhSachBaiHat());
+                                    intent.putExtra(Consts.SONG_EXTRA, song);
+                                }
                                 startActivity(intent);
                                 break;
                             case R.id.menu_item_them_playlist:
-                                // showPopup();
+                                showPopup(song);
                                 break;
                             case R.id.menu_item_rename:
                                 Rename(song);
@@ -111,7 +139,8 @@ public class Fragment_List_BaiHat extends Fragment {
                     }
                 });
                 rclbaiHat.setAdapter(adapter);
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
     }
@@ -123,7 +152,12 @@ public class Fragment_List_BaiHat extends Fragment {
         confirmDelete.setPositiveButton("yes", (dialogInterface, i) -> {
             baiHatService.deleteID(baiHat.getIdBaiHat());
             baiHats.clear();
-            baiHats.addAll(baiHatService.layDanhSachBaiHat());
+            ArrayList<BaiHat> listBaiHat = baiHatService.layDanhSachBaiHat();
+            baiHats.addAll(listBaiHat);
+            //Cập nhật lại danh sách bài hát
+            MediaPlayerService player = Activity_play_nhac.binder.getService();
+            player.updateListBaiHat(listBaiHat);
+            //
             adapter.notifyDataSetChanged();
 
         });
@@ -145,14 +179,54 @@ public class Fragment_List_BaiHat extends Fragment {
             baiHatMoi.setTenBaiHat(editTenBaiHat.getText().toString());
             baiHatService.edit(baiHat, baiHatMoi);
             baiHats.clear();
-            baiHats.addAll(baiHatService.layDanhSachBaiHat());
+            ArrayList<BaiHat> listBaiHat = baiHatService.layDanhSachBaiHat();
+            baiHats.addAll(listBaiHat);
+            //Cập nhật lại danh sách bài hát
+            MediaPlayerService player = Activity_play_nhac.binder.getService();
+            player.updateListBaiHat(listBaiHat);
+            //
             adapter.notifyDataSetChanged();
 
         });
         renameDialog.setNegativeButton("Hủy", (dialogInterface, i) -> dialogInterface.dismiss());
         renameDialog.show();
+    }
+    private void showPopup(BaiHat song) {
 
+        List<String> PlaylistName = new ArrayList<String>();
+        try
+        {
+            for (PlayList playlist : playLists)
+            {
+                PlaylistName.add(playlist.getTenPlayList());
+            }
 
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        //Create sequence of items
+        final CharSequence[] ListName = PlaylistName.toArray(new String[PlaylistName.size()]);
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+        dialogBuilder.setTitle("Mời bạn chọn Playlist:");
+        dialogBuilder.setItems(ListName, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+
+                try{
+                    playlistService.addPlaylist_BaiHat(playLists.get(item).getIdPlayList(),song.getIdBaiHat());
+                    int count  = playlistService.getSongNumber(playLists.get(item).getIdPlayList());
+                }catch (Exception e){
+                    Toast.makeText(getContext(),"Bạn đã có bài hát này trong playlist",Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+        //Create alert dialog object via builder
+        AlertDialog alertDialogObject = dialogBuilder.create();
+        //Show the dialog
+        alertDialogObject.show();
     }
 
 

@@ -2,9 +2,12 @@ package com.example.nhom9.musicplayer.Activity;
 
 import android.Manifest;
 import android.content.ComponentName;
+import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -16,12 +19,18 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.nhom9.musicplayer.Adapter.ViewPageAdapter;
@@ -40,10 +49,13 @@ public class Activity_trang_chu extends AppCompatActivity {
     public static final String Broadcast_PLAY_NEW_AUDIO = "com.example.nhom9.musicplayer.PlayNewAudio";
 
     private MediaPlayerService player;
-    boolean serviceBound = false;
 
     SeekBar collapseSeekbar;
     ImageButton btnPlay;
+    ImageView profileImg;
+    TextView nameSong,nameSinger;
+    LinearLayout musicBar;
+    FrameLayout frameDisplay;
 
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
 
@@ -57,7 +69,14 @@ public class Activity_trang_chu extends AppCompatActivity {
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
+        musicBar = (LinearLayout) findViewById(R.id.musicBar);
+        frameDisplay = (FrameLayout) findViewById(R.id.frame_container);
+        setHideMusicBar(true);
+
         btnPlay = (ImageButton) findViewById(R.id.btn_play_collapse);
+        profileImg=(ImageView) findViewById(R.id.profile_image);
+        nameSong=(TextView) findViewById(R.id.txt_name_song);
+        nameSinger=(TextView) findViewById(R.id.txt_name_singer);
         collapseSeekbar = (SeekBar)findViewById(R.id.seekbar_song_collapse);
         collapseSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -72,7 +91,31 @@ public class Activity_trang_chu extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                player.setSeekTo(seekBar.getProgress());
+                if(player!= null){
+                    player.setSeekTo(seekBar.getProgress());
+                }
+            }
+        });
+        btnPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(player!=null){
+                    if (player.btnPlayStopClick()) {
+                        btnPlay.setImageResource(R.drawable.iconplay);
+                    } else {
+                        btnPlay.setImageResource(R.drawable.iconpause);
+                    }
+                }
+            }
+        });
+
+        musicBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(Activity_play_nhac.comingBaiHat != null){
+                    Intent intent = new Intent(getApplicationContext(), Activity_play_nhac.class);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -87,9 +130,26 @@ public class Activity_trang_chu extends AppCompatActivity {
         }
     }
 
+
+    public void setHideMusicBar(boolean flag){
+        if(flag){
+            musicBar.setVisibility(View.GONE);
+        }
+        else {
+            musicBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        Log.i(TAG,"New Intent");
+        super.onNewIntent(intent);
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
+
         if(Activity_play_nhac.binder != null){
             player = Activity_play_nhac.binder.getService();
             SetTimeTotal();
@@ -98,12 +158,28 @@ public class Activity_trang_chu extends AppCompatActivity {
     }
 
     private void UpdateTimeSong() {
+        setHideMusicBar(false);
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.i(TAG, "onStart: "+player.getCurrentPosition());
                 collapseSeekbar.setProgress(player.getCurrentPosition());
+                nameSong.setText(player.getCurrentBaiHat().getTenBaiHat());
+                nameSinger.setText(player.getCaSiService().layTenCaSi(player.getCurrentBaiHat().getIdCasi()));
+
+
+                Bitmap imgbitmap = BitmapFactory.decodeResource(getResources(),R.drawable.image5);
+                if(player.getCurrentBaiHat().getHinhAnh()!=null){
+                    imgbitmap = BitmapFactory.decodeByteArray(player.getCurrentBaiHat().getHinhAnh(), 0, player.getCurrentBaiHat().getHinhAnh().length); //replace with medias albumArt
+                }
+
+                profileImg.setImageBitmap(imgbitmap);
+
+                if (!player.getMediaPlayerState()) {
+                    btnPlay.setImageResource(R.drawable.iconplay);
+                } else {
+                    btnPlay.setImageResource(R.drawable.iconpause);
+                }
                 handler.postDelayed(this, 100);
             }
         }, 100);
@@ -180,57 +256,30 @@ public class Activity_trang_chu extends AppCompatActivity {
         }
     }
 
-
-    /**
-     * Add the following methods to MainActivity to fix it.
-     * All these methods do is save and restore the state of the serviceBound variable
-     * and unbind the Service when a user closes the app.
-     * @param savedInstanceState
-     */
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putBoolean("ServiceState", serviceBound);
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    /**
-     *
-     * @param savedInstanceState
-     */
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        serviceBound = savedInstanceState.getBoolean("ServiceState");
-    }
-
     /**
      *
      */
     @Override
     protected void onDestroy() {
+//        if(player!=null){
+//            player.removeNotification();
+//        }
+//        Intent playerIntent = new Intent(this, MediaPlayerService.class);
+//        stopService(playerIntent);
+
         super.onDestroy();
-        if (serviceBound) {
-            unbindService(serviceConnection);
-            //service is active
-            player.stopSelf();
-        }
     }
 
-    //Binding this Client to the AudioPlayer Service
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            MediaPlayerService.LocalBinder binder = (MediaPlayerService.LocalBinder) service;
-            player = binder.getService();
-            serviceBound = true;
-
-            Toast.makeText(Activity_trang_chu.this, "Service Bound", Toast.LENGTH_SHORT).show();
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Intent i=new Intent(this,Activity_trang_chu.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            finish();
+            return true;
         }
 
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            serviceBound = false;
-        }
-    };
+        return super.onKeyDown(keyCode, event);
+    }
 }

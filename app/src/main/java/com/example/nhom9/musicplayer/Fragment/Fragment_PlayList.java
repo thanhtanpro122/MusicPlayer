@@ -27,7 +27,7 @@ import com.example.nhom9.musicplayer.DatabaseAccess.PlayListService;
 import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.Model.PlayList;
 import com.example.nhom9.musicplayer.R;
-import com.example.nhom9.musicplayer.common.Consts;
+import com.example.nhom9.musicplayer.Common.Consts;
 import com.example.nhom9.musicplayer.utils.Tools;
 import com.example.nhom9.musicplayer.widget.SpacingItemDecoration;
 
@@ -77,7 +77,7 @@ public class Fragment_PlayList extends Fragment {
 
         return root;
     }
-    private void adapterPlaylist_itemClick(View view, PlayList playList, int i) {
+    private void adapterPlaylist_itemClick(View view, PlayList playList) {
         try {
                 Intent intent = new Intent(getContext(), Activity_playlist_baihat.class);
                 intent.putExtra(Consts.PLAY_LIST, playList);
@@ -107,9 +107,22 @@ public class Fragment_PlayList extends Fragment {
     private void adapterPlaylists_itemClick(View view, PlayList playList){
         ArrayList<BaiHat> lstSong = service.getSongList(String.valueOf(playList.getIdPlayList()));
         Intent playIntent = new Intent(getActivity(), Activity_play_nhac.class);
-        playIntent.putExtra(Consts.SONGS_EXTRA, lstSong);
-        playIntent.putExtra(Consts.SONG_EXTRA, lstSong.get(0));
-        playIntent.putExtra(Consts.SONG_POSITION_EXTRA, 0);
+
+        if(Activity_play_nhac.comingBaiHat != null){
+            Activity_play_nhac.comingBaiHat = lstSong.get(0);
+        }
+        if(Activity_play_nhac.currentPlayList != null){
+            Activity_play_nhac.currentPlayList = lstSong ;
+        }
+        if(Activity_play_nhac.comingBaiHat == null && Activity_play_nhac.currentPlayList==null){
+            playIntent.putExtra(Consts.PLAY_LIST, lstSong);
+            playIntent.putExtra(Consts.SONG_EXTRA, lstSong.get(0));
+        }
+
+
+//        playIntent.putExtra(Consts.SONGS_EXTRA, lstSong);
+//        playIntent.putExtra(Consts.SONG_EXTRA, lstSong.get(0));
+//        playIntent.putExtra(Consts.SONG_POSITION_EXTRA, 0);
 
         startActivity(playIntent);
     }
@@ -155,7 +168,7 @@ public class Fragment_PlayList extends Fragment {
         try {
             service = new PlayListService(getContext());
 
-            service.deletePLaylist(String.valueOf(playList.getIdPlayList()));
+            service.deletePLaylist(playList.getIdPlayList());
             playLists.clear();
             playLists.addAll(service.getAll());
             adapter.notifyDataSetChanged();
@@ -166,49 +179,49 @@ public class Fragment_PlayList extends Fragment {
         }
     }
 
-    private void init(){
-        adapter.setOnItemClickListener(new PlayListAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, PlayList playList, int position) {
-
-            }
-
+//    private void init(){
+//        adapter.setOnItemClickListener(new PlayListAdapter.OnItemClickListener() {
 //            @Override
-//            public void onClick(View view, BaiHat baiHat, int pos) {
-//                Intent intent = new Intent(getContext(), Activity_play_nhac.class);
-//                intent.putExtra("song", baiHat);
+//            public void onItemClick(View view, PlayList playList) {
 //
-//                startActivity(intent);
 //            }
-        });
-        adapter.setOnMoreItemClick(new PlayListAdapter.OnMoreItemClickListener() {
-            @Override
-            public void onMoreItemClick(View view, PlayList playList, MenuItem item) {
-
-            }
-
+//
+////            @Override
+////            public void onClick(View view, BaiHat baiHat, int pos) {
+////                Intent intent = new Intent(getContext(), Activity_play_nhac.class);
+////                intent.putExtra("song", baiHat);
+////
+////                startActivity(intent);
+////            }
+//        });
+//        adapter.setOnMoreItemClick(new PlayListAdapter.OnMoreItemClickListener() {
 //            @Override
-//            public void onMoreItemClick(View view, BaiHat song, MenuItem item) {
-//                switch (item.getItemId()) {
-//                    case R.id.menu_item_play:
-//                        Intent intent = new Intent(getContext(), Activity_play_nhac.class);
-//                        intent.putExtra("song", song);
+//            public void onMoreItemClick(View view, PlayList playList, MenuItem item) {
 //
-//                        startActivity(intent);
-//                        break;
-//                    case R.id.menu_item_them_playlist:
-//                        // showPopup();
-//                        break;
-//                    case R.id.menu_item_rename:
-//
-//                        break;
-//                    case R.id.menu_item_delete:
-//
-//                        break;
-//                }
 //            }
-        });
-    }
+//
+////            @Override
+////            public void onMoreItemClick(View view, BaiHat song, MenuItem item) {
+////                switch (item.getItemId()) {
+////                    case R.id.menu_item_play:
+////                        Intent intent = new Intent(getContext(), Activity_play_nhac.class);
+////                        intent.putExtra("song", song);
+////
+////                        startActivity(intent);
+////                        break;
+////                    case R.id.menu_item_them_playlist:
+////                        // showPopup();
+////                        break;
+////                    case R.id.menu_item_rename:
+////
+////                        break;
+////                    case R.id.menu_item_delete:
+////
+////                        break;
+////                }
+////            }
+//        });
+//    }
 
     private void fabAddPlaylistOnClick(View view) {
         LayoutInflater inflater = getLayoutInflater();
