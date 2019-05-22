@@ -117,6 +117,56 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         }
     }
 
+    /**
+     * The onStartCommand() handles the initialization of the MediaPlayer
+     * and the focus request to make sure there are no other apps playing media.
+     * In the onStartCommand() code I added an extra try-catch block to make sure the getExtras() method doesn’t throw a NullPointerException.
+     * @param intent
+     * @param flags
+     * @param startId
+     * @return
+     */
+    //The system calls this method when an activity, requests the service be started
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        try {
+            try{
+                listBaiHat = Activity_play_nhac.currentPlayList;
+            }catch (Exception ignore){}
+            if(getCurrentBaiHat()==null){
+                baihatIndex = getSongIndex(Activity_play_nhac.comingBaiHat.getIdBaiHat());
+            }
+            if (baihatIndex != -1 && baihatIndex < listBaiHat.size()) {
+                //index is in a valid range
+                activeBaiHat = listBaiHat.get(baihatIndex);
+            } else {
+                stopSelf();
+            }
+        } catch (NullPointerException e) {
+            stopSelf();
+        }
+
+        //Request audio focus
+        if (requestAudioFocus() == false) {
+            //Could not gain focus
+            stopSelf();
+        }
+        if (mediaSessionManager == null) {
+            try {
+                initMediaSession();
+                initMediaPlayer();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                stopSelf();
+            }
+            buildNotification(PlaybackStatus.PLAYING);
+        }
+
+        //Handle Intent action from MediaSession.TransportControls
+        handleIncomingActions(intent);
+        return super.onStartCommand(intent, flags, startId);
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -129,16 +179,40 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         if (phoneStateListener != null) {
             telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE);
         }
-
         removeNotification();
-
-        //unregister BroadcastReceivers
         unregisterReceiver(becomingNoisyReceiver);
         unregisterReceiver(playNewAudio);
-
-        //clear cached playlist
-//        new StorageUtil(getApplicationContext()).clearCachedAudioPlaylist();
     }
+
+    private void register_playNewAudio() {
+        //Register playNewMedia receiver
+        IntentFilter filter = new IntentFilter(Activity_play_nhac.Broadcast_PLAY_NEW_AUDIO);
+        registerReceiver(playNewAudio, filter);
+    }
+
+    private BroadcastReceiver playNewAudio = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            //Get the new media index form SharedPreferences
+            if(!isCurrentSong(Activity_play_nhac.comingBaiHat)){
+                baihatIndex = getSongIndex(Activity_play_nhac.comingBaiHat.getIdBaiHat());
+                if (baihatIndex != -1 && baihatIndex < listBaiHat.size()) {
+                    //index is in a valid range
+                    activeBaiHat = listBaiHat.get(baihatIndex);
+                } else {
+                    stopSelf();
+                }
+                //A PLAY_NEW_AUDIO action received
+                //reset mediaPlayer to play the new Audio
+                stopMedia();
+                mediaPlayer.reset();
+                initMediaPlayer();
+                updateMetaData();
+                buildNotification(PlaybackStatus.PLAYING);
+            }
+        }
+    };
 
     /**
      *
@@ -168,6 +242,71 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         mediaPlayer.prepareAsync();
     }
 
+    private void initMediaSession() throws RemoteException {
+        if (mediaSessionManager != null) return; //mediaSessionManager exists
+
+        mediaSessionManager = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
+        // Create a new MediaSession
+        mediaSession = new MediaSessionCompat(getApplicationContext(), "AudioPlayer");
+        //Get MediaSessions transport controls
+        transportControls = mediaSession.getController().getTransportControls();
+        //set MediaSession -> ready to receive media commands
+        mediaSession.setActive(true);
+        //indicate that the MediaSession handles transport control commands
+        // through its MediaSessionCompat.Callback.
+        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+
+        //Set mediaSession's MetaData
+        updateMetaData();
+
+        // Attach Callback to receive MediaSession updates
+        mediaSession.setCallback(new MediaSessionCompat.Callback() {
+            // Implement callbacks
+            @Override
+            public void onPlay() {
+                super.onPlay();
+                resumeMedia();
+                buildNotification(PlaybackStatus.PLAYING);
+            }
+
+            @Override
+            public void onPause() {
+                super.onPause();
+                pauseMedia();
+                buildNotification(PlaybackStatus.PAUSED);
+            }
+
+            @Override
+            public void onSkipToNext() {
+                super.onSkipToNext();
+                skipToNext();
+                updateMetaData();
+                buildNotification(PlaybackStatus.PLAYING);
+            }
+
+            @Override
+            public void onSkipToPrevious() {
+                super.onSkipToPrevious();
+                skipToPrevious();
+                updateMetaData();
+                buildNotification(PlaybackStatus.PLAYING);
+            }
+
+            @Override
+            public void onStop() {
+                super.onStop();
+                removeNotification();
+                //Stop the service
+                stopSelf();
+            }
+
+            @Override
+            public void onSeekTo(long position) {
+                super.onSeekTo(position);
+            }
+        });
+    }
+
     /**
      *
      */
@@ -176,6 +315,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             mediaPlayer.start();
         }
     }
+
 
     /**
      *
@@ -226,12 +366,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
             }
         updateMetaData();
         buildNotification(PlaybackStatus.PLAYING);
-//        //Invoked when playback of a media source has completed.
-//        stopMedia();
-//
-//        removeNotification();
-//        //stop the service
-//        stopSelf();
     }
 
     //Handle errors
@@ -403,102 +537,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
 
-    private BroadcastReceiver playNewAudio = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
 
-            //Get the new media index form SharedPreferences
-            if(!isCurrentSong(Activity_play_nhac.comingBaiHat)){
-                baihatIndex = getSongIndex(Activity_play_nhac.comingBaiHat.getIdBaiHat());
-                if (baihatIndex != -1 && baihatIndex < listBaiHat.size()) {
-                    //index is in a valid range
-                    activeBaiHat = listBaiHat.get(baihatIndex);
-                } else {
-                    stopSelf();
-                }
-
-
-                //A PLAY_NEW_AUDIO action received
-                //reset mediaPlayer to play the new Audio
-                stopMedia();
-                mediaPlayer.reset();
-                initMediaPlayer();
-                updateMetaData();
-                buildNotification(PlaybackStatus.PLAYING);
-            }
-        }
-    };
-
-    private void register_playNewAudio() {
-        //Register playNewMedia receiver
-        IntentFilter filter = new IntentFilter(Activity_play_nhac.Broadcast_PLAY_NEW_AUDIO);
-        registerReceiver(playNewAudio, filter);
-    }
-
-    private void initMediaSession() throws RemoteException {
-        if (mediaSessionManager != null) return; //mediaSessionManager exists
-
-        mediaSessionManager = (MediaSessionManager) getSystemService(Context.MEDIA_SESSION_SERVICE);
-        // Create a new MediaSession
-        mediaSession = new MediaSessionCompat(getApplicationContext(), "AudioPlayer");
-        //Get MediaSessions transport controls
-        transportControls = mediaSession.getController().getTransportControls();
-        //set MediaSession -> ready to receive media commands
-        mediaSession.setActive(true);
-        //indicate that the MediaSession handles transport control commands
-        // through its MediaSessionCompat.Callback.
-        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
-
-        //Set mediaSession's MetaData
-        updateMetaData();
-
-        // Attach Callback to receive MediaSession updates
-        mediaSession.setCallback(new MediaSessionCompat.Callback() {
-            // Implement callbacks
-            @Override
-            public void onPlay() {
-                super.onPlay();
-                resumeMedia();
-                buildNotification(PlaybackStatus.PLAYING);
-            }
-
-            @Override
-            public void onPause() {
-                super.onPause();
-                pauseMedia();
-                buildNotification(PlaybackStatus.PAUSED);
-            }
-
-            @Override
-            public void onSkipToNext() {
-                super.onSkipToNext();
-                skipToNext();
-                updateMetaData();
-                buildNotification(PlaybackStatus.PLAYING);
-            }
-
-            @Override
-            public void onSkipToPrevious() {
-                super.onSkipToPrevious();
-                skipToPrevious();
-                updateMetaData();
-                buildNotification(PlaybackStatus.PLAYING);
-            }
-
-            @Override
-            public void onStop() {
-                super.onStop();
-                removeNotification();
-                //Stop the service
-                stopSelf();
-            }
-
-            @Override
-            public void onSeekTo(long position) {
-                super.onSeekTo(position);
-            }
-        });
-    }
 
     private void updateMetaData() {
         Bitmap albumArt = BitmapFactory.decodeResource(getResources(),R.drawable.image5);
@@ -669,76 +708,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         }
     }
 
-    /**
-     * The onStartCommand() handles the initialization of the MediaPlayer
-     * and the focus request to make sure there are no other apps playing media.
-     * In the onStartCommand() code I added an extra try-catch block to make sure the getExtras() method doesn’t throw a NullPointerException.
-     * @param intent
-     * @param flags
-     * @param startId
-     * @return
-     */
-    //The system calls this method when an activity, requests the service be started
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        try {
 
-            try{
-                listBaiHat = Activity_play_nhac.currentPlayList;
-            }catch (Exception ignore){}
-            if(getCurrentBaiHat()==null){
-                baihatIndex = getSongIndex(Activity_play_nhac.comingBaiHat.getIdBaiHat());
-            }
-            if (baihatIndex != -1 && baihatIndex < listBaiHat.size()) {
-                //index is in a valid range
-                activeBaiHat = listBaiHat.get(baihatIndex);
-            } else {
-                stopSelf();
-            }
-        } catch (NullPointerException e) {
-            stopSelf();
-        }
-
-        //Request audio focus
-        if (requestAudioFocus() == false) {
-            //Could not gain focus
-            stopSelf();
-        }
-//HERE TODO
-        if (mediaSessionManager == null) {
-            try {
-                initMediaSession();
-                initMediaPlayer();
-            } catch (RemoteException e) {
-                e.printStackTrace();
-                stopSelf();
-            }
-            buildNotification(PlaybackStatus.PLAYING);
-        }
-
-        //Handle Intent action from MediaSession.TransportControls
-        handleIncomingActions(intent);
-        return super.onStartCommand(intent, flags, startId);
-
-
-//        try {
-//            //An audio file is passed to the service through putExtra();
-//            mediaFile = intent.getExtras().getString("media");
-//        } catch (NullPointerException e) {
-//            stopSelf();
-//        }
-//
-//        //Request audio focus
-//        if (requestAudioFocus() == false) {
-//            //Could not gain focus
-//            stopSelf();
-//        }
-//
-//        if (mediaFile != null && mediaFile != "")
-//            initMediaPlayer();
-//
-//        return super.onStartCommand(intent, flags, startId);
-    }
 
     public boolean btnPlayStopClick(){
         if(mediaPlayer.isPlaying()){
@@ -864,9 +834,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         if(this.listBaiHat != listBaiHat){
             this.listBaiHat = listBaiHat;
         }
-
-//        activeBaiHat = listBaiHat.get(setSongIndex());
-//        buildNotification(PlaybackStatus.PLAYING);
     }
 
 }

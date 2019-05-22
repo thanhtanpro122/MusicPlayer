@@ -60,17 +60,50 @@ public class Activity_play_nhac extends AppCompatActivity {
     public static ArrayList<BaiHat> currentPlayList;
     public static BaiHat comingBaiHat;
 
+    Handler handler;
+    Runnable myRunnable;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_play_nhac);
-        AnhXa();
-//        AddSong();
+        init();
+        handler = new Handler(getMainLooper());
 
         if (savedInstanceState != null) {
             onRestoreInstanceState(savedInstanceState);
         }
+
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras != null) {
+                comingBaiHat = (BaiHat) extras.getSerializable(Consts.SONG_EXTRA);
+                currentPlayList = (ArrayList<BaiHat>) extras.getSerializable(Consts.PLAY_LIST);
+            }
+        } else {
+            comingBaiHat = (BaiHat) savedInstanceState.getSerializable(Consts.SONG_EXTRA);
+            currentPlayList = (ArrayList<BaiHat>) savedInstanceState.getSerializable(Consts.PLAY_LIST);
+        }
+
+
+    }
+
+    private void init() {
+        txtTime = (TextView) findViewById(R.id.txt_time_song);
+        txtTotalTime = (TextView) findViewById(R.id.txt_total_time_song);
+
+
+        seekBar = (SeekBar) findViewById(R.id.seekbar_song);
+
+        btnPreview = (ImageButton) findViewById(R.id.btn_preview);
+        btnPlay = (ImageButton) findViewById(R.id.btn_play);
+        btnNext = (ImageButton) findViewById(R.id.btn_next);
+        btnRandom=(ImageButton) findViewById(R.id.btn_ngaunhien);
+        btnRepeat=(ImageButton) findViewById(R.id.btn_repeat);
+        txtSingerName=(TextView) findViewById(R.id.txt_name_singer);
+        txtSongName=(TextView) findViewById(R.id.txt_name_song);
+        profileImg=(CircleImageView) findViewById(R.id.profile_image);
 
         Toolbar toolbar_play_nhac = findViewById(R.id.toolbar_play_nhac);
         setSupportActionBar(toolbar_play_nhac);
@@ -84,29 +117,8 @@ public class Activity_play_nhac extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-//        XuLyCacNut();
-//        SetTimeTotal();
-//        UpdateTimeSong();
-        if (savedInstanceState == null) {
-            Bundle extras = getIntent().getExtras();
-            if(extras != null) {
-                comingBaiHat = (BaiHat) extras.getSerializable(Consts.SONG_EXTRA);
-                currentPlayList = (ArrayList<BaiHat>) extras.getSerializable(Consts.PLAY_LIST);
-            }
-        } else {
-            comingBaiHat = (BaiHat) savedInstanceState.getSerializable(Consts.SONG_EXTRA);
-            currentPlayList = (ArrayList<BaiHat>) savedInstanceState.getSerializable(Consts.PLAY_LIST);
-        }
 
-//        setUpService();
         XuLyCacNut();
-//        setUpScreen();
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        Log.i(TAG,"New Intent");
-        super.onNewIntent(intent);
     }
 
     @Override
@@ -124,15 +136,6 @@ public class Activity_play_nhac extends AppCompatActivity {
 
         Log.i("Activity_play_nhac","OnStart");
     }
-//
-//    @Override
-//    protected void onRestart() {
-//        baiHat = (BaiHat) getIntent().getSerializableExtra("song");
-//        if (!player.isCurrentSong(baiHat)) {
-//            indexBaiHat = player.setSongIndex(baiHat.getIdBaiHat());
-//        }
-//        super.onRestart();
-//    }
 
     private void setUpService(){
         //Check is service is active
@@ -157,6 +160,7 @@ public class Activity_play_nhac extends AppCompatActivity {
             player = binder.getService();
             serviceBound = true;
             setUpScreen();
+            runHandlerRunnable();
             Toast.makeText(Activity_play_nhac.this, "Service Bound", Toast.LENGTH_SHORT).show();
         }
 
@@ -166,16 +170,45 @@ public class Activity_play_nhac extends AppCompatActivity {
         }
     };
 
+    private void runHandlerRunnable(){
+        if(myRunnable == null){
+            myRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    if (player.isMediaPlayerNull()) {
+                        return;
+                    }
+                    if(player!= null){
+                        player.updateListBaiHat(currentPlayList);
+                        if (!player.isCurrentSong(comingBaiHat)) {
+                            indexBaiHat = player.setSongIndex(comingBaiHat.getIdBaiHat());
+                            comingBaiHat = player.getCurrentBaiHat();
+                        }
+                    }
+
+                    if (!player.getMediaPlayerState()) {
+                        btnPlay.setImageResource(R.drawable.iconplay);
+                    } else {
+                        btnPlay.setImageResource(R.drawable.iconpause);
+                    }
+                    SimpleDateFormat dinhDangGio = new SimpleDateFormat("mm:ss");
+                    txtTime.setText(dinhDangGio.format(player.getCurrentPosition()));
+                    seekBar.setProgress(player.getCurrentPosition());
+
+//                setUpScreen();
+                    resetScreen();
+
+                    handler.postDelayed(this, 100);
+                }
+            };
+            handler.post(myRunnable);
+        }
+
+
+    }
+
     public void setUpScreen(){
         if(player!= null){
-            //getSupportActionBar().setTitle(player.getCurrentBaiHat().getTenBaiHat());
-
-//            getSupportActionBar().setTitle("");
-//            txtSongName.setText(player.getCurrentBaiHat().getTenBaiHat());
-//            txtSingerName.setText(player.getCaSiService().layTenCaSi(player.getCurrentBaiHat().getIdCasi()));
-//            Bitmap imgbitmap = BitmapFactory.decodeByteArray(player.getCurrentBaiHat().getHinhAnh(), 0, player.getCurrentBaiHat().getHinhAnh().length);
-//            profileImg.setImageBitmap(imgbitmap);
-
             if(player.getMediaPlayerState()){
                 btnPlay.setImageResource(R.drawable.iconpause);
             }else{
@@ -195,10 +228,7 @@ public class Activity_play_nhac extends AppCompatActivity {
                 btnRandom.setImageResource(R.drawable.iconsuffle);
                 btnRandom.setTag('0');
             }
-
-//            SetTimeTotal();
-//            resetScreen();
-            UpdateTimeSong();
+//            UpdateTimeSong();
         }
     }
 
@@ -215,54 +245,6 @@ public class Activity_play_nhac extends AppCompatActivity {
             profileImg.setImageBitmap(imgbitmap);
             SetTimeTotal();
         }
-    }
-
-    /**
-     * Add the following methods to MainActivity to fix it.
-     * All these methods do is save and restore the state of the serviceBound variable
-     * and unbind the Service when a user closes the app.
-     * @param savedInstanceState
-     */
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putBoolean("ServiceState", serviceBound);
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    /**
-     *
-     * @param savedInstanceState
-     */
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        serviceBound = savedInstanceState.getBoolean("ServiceState");
-    }
-
-    /**
-     *
-     */
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (serviceBound) {
-//            player.removeNotification();
-            unbindService(serviceConnection);
-            //service is active
-            player.stopSelf();
-        }
-    }
-//CODE TODO
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            Log.i(TAG, "onKeyDown: back");
-            Intent intent = new Intent(getApplicationContext(), Activity_trang_chu.class);
-            startActivity(intent);
-            return true;
-        }
-
-        return super.onKeyDown(keyCode, event);
     }
 
     private void XuLyCacNut(){
@@ -356,53 +338,45 @@ public class Activity_play_nhac extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                    player.setSeekTo(seekBar.getProgress());
+                player.setSeekTo(seekBar.getProgress());
 
 //                player.setSeekTo(Activity_trang_chu.collapseSeekbar.getProgress());
             }
         });
     }
 
-    private void UpdateTimeSong() {
-
-
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (player.isMediaPlayerNull()) {
-                    return;
-                }
-
-
-                if(player!= null){
-                    player.updateListBaiHat(currentPlayList);
-                    if (!player.isCurrentSong(comingBaiHat)) {
-                        indexBaiHat = player.setSongIndex(comingBaiHat.getIdBaiHat());
-                        comingBaiHat = player.getCurrentBaiHat();
-                    }
-                }
-
-
-
-                if (!player.getMediaPlayerState()) {
-                    btnPlay.setImageResource(R.drawable.iconplay);
-                } else {
-                    btnPlay.setImageResource(R.drawable.iconpause);
-                }
-                SimpleDateFormat dinhDangGio = new SimpleDateFormat("mm:ss");
-                txtTime.setText(dinhDangGio.format(player.getCurrentPosition()));
-
-                seekBar.setProgress(player.getCurrentPosition());
-//                Activity_trang_chu.collapseSeekbar.setProgress(player.getCurrentPosition());
-
-//                setUpScreen();
-                resetScreen();
-
-                handler.postDelayed(this, 100);
-            }
-        }, 100);
-    }
+//    private void UpdateTimeSong() {
+//        final Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (player.isMediaPlayerNull()) {
+//                    return;
+//                }
+//                if(player!= null){
+//                    player.updateListBaiHat(currentPlayList);
+//                    if (!player.isCurrentSong(comingBaiHat)) {
+//                        indexBaiHat = player.setSongIndex(comingBaiHat.getIdBaiHat());
+//                        comingBaiHat = player.getCurrentBaiHat();
+//                    }
+//                }
+//
+//                if (!player.getMediaPlayerState()) {
+//                    btnPlay.setImageResource(R.drawable.iconplay);
+//                } else {
+//                    btnPlay.setImageResource(R.drawable.iconpause);
+//                }
+//                SimpleDateFormat dinhDangGio = new SimpleDateFormat("mm:ss");
+//                txtTime.setText(dinhDangGio.format(player.getCurrentPosition()));
+//                seekBar.setProgress(player.getCurrentPosition());
+//
+////                setUpScreen();
+//                resetScreen();
+//
+//                handler.postDelayed(this, 100);
+//            }
+//        }, 100);
+//    }
 
     public void SetTimeTotal() {
         SimpleDateFormat dinhDanggio = new SimpleDateFormat("mm:ss");
@@ -412,22 +386,57 @@ public class Activity_play_nhac extends AppCompatActivity {
 //        Activity_trang_chu.collapseSeekbar.setProgress(player.getDuration());
     }
 
-    private void AnhXa() {
-        txtTime = (TextView) findViewById(R.id.txt_time_song);
-        txtTotalTime = (TextView) findViewById(R.id.txt_total_time_song);
-
-
-        seekBar = (SeekBar) findViewById(R.id.seekbar_song);
-
-        btnPreview = (ImageButton) findViewById(R.id.btn_preview);
-        btnPlay = (ImageButton) findViewById(R.id.btn_play);
-        btnNext = (ImageButton) findViewById(R.id.btn_next);
-        btnRandom=(ImageButton) findViewById(R.id.btn_ngaunhien);
-        btnRepeat=(ImageButton) findViewById(R.id.btn_repeat);
-        txtSingerName=(TextView) findViewById(R.id.txt_name_singer);
-        txtSongName=(TextView) findViewById(R.id.txt_name_song);
-        profileImg=(CircleImageView) findViewById(R.id.profile_image);
+    /**
+     * Add the following methods to MainActivity to fix it.
+     * All these methods do is save and restore the state of the serviceBound variable
+     * and unbind the Service when a user closes the app.
+     * @param savedInstanceState
+     */
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putBoolean("ServiceState", serviceBound);
+        super.onSaveInstanceState(savedInstanceState);
     }
+
+    /**
+     *
+     * @param savedInstanceState
+     */
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        serviceBound = savedInstanceState.getBoolean("ServiceState");
+    }
+
+    /**
+     *
+     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (serviceBound) {
+//            player.removeNotification();
+            unbindService(serviceConnection);
+            //service is active
+            player.stopSelf();
+        }
+    }
+//CODE TODO
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Log.i(TAG, "onKeyDown: back");
+            Intent intent = new Intent(getApplicationContext(), Activity_trang_chu.class);
+            startActivity(intent);
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
+
+
+
+
 
 
 

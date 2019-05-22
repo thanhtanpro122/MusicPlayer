@@ -9,7 +9,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -46,10 +48,6 @@ public class Activity_trang_chu extends AppCompatActivity {
 
     private final String TAG = "Activity_trang_chu";
 
-    public static final String Broadcast_PLAY_NEW_AUDIO = "com.example.nhom9.musicplayer.PlayNewAudio";
-
-    private MediaPlayerService player;
-
     SeekBar collapseSeekbar;
     ImageButton btnPlay;
     ImageView profileImg;
@@ -57,21 +55,28 @@ public class Activity_trang_chu extends AppCompatActivity {
     LinearLayout musicBar;
     FrameLayout frameDisplay;
 
+    private MediaPlayerService player;
+
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
+
+    Handler handler;
+    Runnable myRunnable;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trang_chu);
 
+        handler = new Handler(getMainLooper());
+
+
         loadFragment(new Fragment_List_BaiHat());
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        musicBar = (LinearLayout) findViewById(R.id.musicBar);
-        frameDisplay = (FrameLayout) findViewById(R.id.frame_container);
-        setHideMusicBar(true);
+
 
         btnPlay = (ImageButton) findViewById(R.id.btn_play_collapse);
         profileImg=(ImageView) findViewById(R.id.profile_image);
@@ -109,6 +114,9 @@ public class Activity_trang_chu extends AppCompatActivity {
             }
         });
 
+        musicBar = (LinearLayout) findViewById(R.id.musicBar);
+        frameDisplay = (FrameLayout) findViewById(R.id.frame_container);
+        setHideMusicBar(true);
         musicBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -118,7 +126,6 @@ public class Activity_trang_chu extends AppCompatActivity {
                 }
             }
         });
-
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -140,56 +147,7 @@ public class Activity_trang_chu extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        Log.i(TAG,"New Intent");
-        super.onNewIntent(intent);
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        if(Activity_play_nhac.binder != null){
-            player = Activity_play_nhac.binder.getService();
-            SetTimeTotal();
-            UpdateTimeSong();
-        }
-    }
-
-    private void UpdateTimeSong() {
-        setHideMusicBar(false);
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                collapseSeekbar.setProgress(player.getCurrentPosition());
-                nameSong.setText(player.getCurrentBaiHat().getTenBaiHat());
-                nameSinger.setText(player.getCaSiService().layTenCaSi(player.getCurrentBaiHat().getIdCasi()));
-
-
-                Bitmap imgbitmap = BitmapFactory.decodeResource(getResources(),R.drawable.image5);
-                if(player.getCurrentBaiHat().getHinhAnh()!=null){
-                    imgbitmap = BitmapFactory.decodeByteArray(player.getCurrentBaiHat().getHinhAnh(), 0, player.getCurrentBaiHat().getHinhAnh().length); //replace with medias albumArt
-                }
-
-                profileImg.setImageBitmap(imgbitmap);
-
-                if (!player.getMediaPlayerState()) {
-                    btnPlay.setImageResource(R.drawable.iconplay);
-                } else {
-                    btnPlay.setImageResource(R.drawable.iconpause);
-                }
-                handler.postDelayed(this, 100);
-            }
-        }, 100);
-    }
-
-    public void SetTimeTotal() {
-        //Gán max của skSong = thoi gian phát
-        collapseSeekbar.setMax(player.getDuration());
-//        Activity_trang_chu.collapseSeekbar.setProgress(player.getDuration());
-    }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
@@ -235,16 +193,8 @@ public class Activity_trang_chu extends AppCompatActivity {
             } catch (Exception ignored) {
             }
         }else{
-            Init();
+
         }
-    }
-
-    private void Init(){
-        ViewPageAdapter pageAdapter = new ViewPageAdapter(getSupportFragmentManager());
-
-        pageAdapter.addFragment("Songs", new Fragment_List_BaiHat());
-        pageAdapter.addFragment("Playlists", new Fragment_PlayList());
-
     }
 
     @Override
@@ -256,17 +206,60 @@ public class Activity_trang_chu extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(Activity_play_nhac.binder != null){
+            player = Activity_play_nhac.binder.getService();
+            UpdateTimeSong();
+        }
+    }
+
+    private void UpdateTimeSong() {
+        setHideMusicBar(false);
+        SetTimeTotal();
+        if(player != null){
+            if(myRunnable == null){
+                myRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        collapseSeekbar.setProgress(player.getCurrentPosition());
+                        nameSong.setText(player.getCurrentBaiHat().getTenBaiHat());
+                        nameSinger.setText(player.getCaSiService().layTenCaSi(player.getCurrentBaiHat().getIdCasi()));
+
+
+                        Bitmap imgbitmap = BitmapFactory.decodeResource(getResources(),R.drawable.image5);
+                        if(player.getCurrentBaiHat().getHinhAnh()!=null){
+                            imgbitmap = BitmapFactory.decodeByteArray(player.getCurrentBaiHat().getHinhAnh(), 0, player.getCurrentBaiHat().getHinhAnh().length); //replace with medias albumArt
+                        }
+
+                        profileImg.setImageBitmap(imgbitmap);
+
+                        if (!player.getMediaPlayerState()) {
+                            btnPlay.setImageResource(R.drawable.iconplay);
+                        } else {
+                            btnPlay.setImageResource(R.drawable.iconpause);
+                        }
+                        handler.postDelayed(this, 100);
+                    }
+                };
+
+                handler.post(myRunnable);
+            }
+        }
+
+    }
+
+    public void SetTimeTotal() {
+        //Gán max của skSong = thoi gian phát
+        collapseSeekbar.setMax(player.getDuration());
+    }
+
     /**
      *
      */
     @Override
     protected void onDestroy() {
-//        if(player!=null){
-//            player.removeNotification();
-//        }
-//        Intent playerIntent = new Intent(this, MediaPlayerService.class);
-//        stopService(playerIntent);
-
         super.onDestroy();
     }
 
@@ -279,7 +272,8 @@ public class Activity_trang_chu extends AppCompatActivity {
             finish();
             return true;
         }
-
         return super.onKeyDown(keyCode, event);
     }
+
+
 }
