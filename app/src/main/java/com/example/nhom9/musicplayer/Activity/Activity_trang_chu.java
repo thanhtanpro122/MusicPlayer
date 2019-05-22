@@ -62,6 +62,8 @@ public class Activity_trang_chu extends AppCompatActivity {
     Handler handler;
     Runnable myRunnable;
 
+    BottomNavigationView bottomNavigationView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +75,7 @@ public class Activity_trang_chu extends AppCompatActivity {
 
         loadFragment(new Fragment_List_BaiHat());
 
-        BottomNavigationView bottomNavigationView = (BottomNavigationView)findViewById(R.id.bottom_navigation);
+        bottomNavigationView = (BottomNavigationView)findViewById(R.id.bottom_navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
 
@@ -193,7 +195,7 @@ public class Activity_trang_chu extends AppCompatActivity {
             } catch (Exception ignored) {
             }
         }else{
-
+            
         }
     }
 

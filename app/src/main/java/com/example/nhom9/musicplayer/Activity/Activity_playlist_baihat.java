@@ -19,6 +19,7 @@ import com.example.nhom9.musicplayer.R;
 import com.example.nhom9.musicplayer.Fragment.list_bai_hat_playlist;
 import com.example.nhom9.musicplayer.Fragment.Fragment_Playlist_List_BaiHat_;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Activity_playlist_baihat extends AppCompatActivity {
@@ -36,6 +37,11 @@ public class Activity_playlist_baihat extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist_baihat);
         playList = (PlayList) getIntent().getSerializableExtra(Consts.PLAY_LIST);
+        try {
+            service = new PlayListService(getApplicationContext());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         txtNamePlaylist = findViewById(R.id.txtName_Playlist);
 
