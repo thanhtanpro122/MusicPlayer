@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -15,6 +16,7 @@ import com.example.nhom9.musicplayer.DatabaseAccess.PlayListService;
 import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.Model.PlayList;
 import com.example.nhom9.musicplayer.R;
+import com.example.nhom9.musicplayer.Fragment.list_bai_hat_playlist;
 import com.example.nhom9.musicplayer.Fragment.Fragment_Playlist_List_BaiHat_;
 
 import java.util.ArrayList;
@@ -66,6 +68,18 @@ public class Activity_playlist_baihat extends AppCompatActivity {
                     startActivity(playIntent);
                 }
             });
+        Toolbar toolbar_play_nhac = findViewById(R.id.toolbar_back_playlist);
+        setSupportActionBar(toolbar_play_nhac);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        toolbar_play_nhac.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), Activity_trang_chu.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void loadFragment(Fragment fragment){
