@@ -162,8 +162,7 @@ public class Activity_trang_chu extends AppCompatActivity {
                     loadFragment(fragment);
                     return true;
                 case R.id.action_playlist:
-                    fragment = new Fragment_PlayList();
-                    loadFragment(fragment);
+                    loadFragment(Fragment_PlayList.getInstance());
                     return true;
                 case R.id.action_nearby:
 //                    actionBar.setTitle("Tìm kiếm bài hát");

@@ -159,7 +159,6 @@ public class Fragment_List_BaiHat extends Fragment {
             player.updateListBaiHat(listBaiHat);
             //
             adapter.notifyDataSetChanged();
-
         });
         confirmDelete.setNegativeButton("Hủy bỏ", (dialogInterface, i) -> dialogInterface.dismiss());
         confirmDelete.show();
@@ -216,6 +215,7 @@ public class Fragment_List_BaiHat extends Fragment {
                 try{
                     playlistService.addPlaylist_BaiHat(playLists.get(item).getIdPlayList(),song.getIdBaiHat());
                     int count  = playlistService.getSongNumber(playLists.get(item).getIdPlayList());
+                    list_bai_hat_playlist.getInstance().rclSongPlaylist.setAdapter(list_bai_hat_playlist.getInstance().adapter);
                 }catch (Exception e){
                     Toast.makeText(getContext(),"Bạn đã có bài hát này trong playlist",Toast.LENGTH_SHORT).show();
                 }
