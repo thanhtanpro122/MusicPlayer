@@ -112,6 +112,7 @@ public class list_bai_hat_playlist extends Fragment {
         return root;
     }
 
+
     private void Delete(BaiHat baiHat){
         AlertDialog.Builder confirmDelete = new AlertDialog.Builder(Objects.requireNonNull(getContext()));
         confirmDelete.setTitle("Xóa bài hát khỏi Playlist");

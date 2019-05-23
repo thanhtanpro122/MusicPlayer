@@ -90,7 +90,7 @@ public class Fragment_PlayList extends Fragment {
     }
     private void adapterPlaylist_itemClick(View view, PlayList playList) {
         try {
-                Intent intent = new Intent(getContext(), Activity_playlist_baihat.class);
+            Intent intent = new Intent(getContext(), Activity_playlist_baihat.class);
                 intent.putExtra(Consts.PLAY_LIST, playList);
                 startActivity(intent);
         }
