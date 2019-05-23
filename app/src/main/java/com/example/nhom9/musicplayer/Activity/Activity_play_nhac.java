@@ -26,7 +26,7 @@ import android.widget.Toast;
 
 import com.example.nhom9.musicplayer.Common.Consts;
 import com.example.nhom9.musicplayer.DatabaseAccess.BaiHatService;
-import com.example.nhom9.musicplayer.Fragment.Fragment_List_BaiHat;
+import com.example.nhom9.musicplayer.Fragment.list_bai_hat_playlist;
 import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.R;
 import com.example.nhom9.musicplayer.Service.MediaPlayerService;
@@ -168,7 +168,7 @@ public class Activity_play_nhac extends AppCompatActivity {
 
     public void setUpScreen(){
         if(player!= null){
-            //getSupportActionBar().setTitle(player.getCurrentBaiHat().getTenBaiHat());
+//            getSupportActionBar().setTitle(player.getCurrentBaiHat().getTenBaiHat());
 
 //            getSupportActionBar().setTitle("");
 //            txtSongName.setText(player.getCurrentBaiHat().getTenBaiHat());

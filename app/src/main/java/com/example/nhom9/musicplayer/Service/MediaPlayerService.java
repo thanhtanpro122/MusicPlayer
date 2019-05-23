@@ -27,7 +27,7 @@ import com.example.nhom9.musicplayer.Activity.Activity_play_nhac;
 import com.example.nhom9.musicplayer.Common.PlaybackStatus;
 import com.example.nhom9.musicplayer.DatabaseAccess.BaiHatService;
 import com.example.nhom9.musicplayer.DatabaseAccess.CaSiService;
-import com.example.nhom9.musicplayer.Fragment.Fragment_List_BaiHat;
+import com.example.nhom9.musicplayer.Fragment.list_bai_hat_playlist;
 import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.Model.CaSi;
 import com.example.nhom9.musicplayer.R;

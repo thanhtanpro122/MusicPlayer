@@ -202,8 +202,7 @@ public class Activity_trang_chu extends AppCompatActivity {
                     loadFragment(fragment);
                     return true;
                 case R.id.action_playlist:
-                    fragment = new Fragment_PlayList();
-                    loadFragment(fragment);
+                    loadFragment(Fragment_PlayList.getInstance());
                     return true;
                 case R.id.action_nearby:
 //                    actionBar.setTitle("Tìm kiếm bài hát");
@@ -243,7 +242,7 @@ public class Activity_trang_chu extends AppCompatActivity {
         ViewPageAdapter pageAdapter = new ViewPageAdapter(getSupportFragmentManager());
 
         pageAdapter.addFragment("Songs", new Fragment_List_BaiHat());
-        pageAdapter.addFragment("Playlists", new Fragment_PlayList());
+        pageAdapter.addFragment("Playlists", Fragment_PlayList.getInstance());
 
     }
 

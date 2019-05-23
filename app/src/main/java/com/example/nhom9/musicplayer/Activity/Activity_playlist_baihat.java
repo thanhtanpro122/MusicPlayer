@@ -17,7 +17,6 @@ import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.Model.PlayList;
 import com.example.nhom9.musicplayer.R;
 import com.example.nhom9.musicplayer.Fragment.list_bai_hat_playlist;
-import com.example.nhom9.musicplayer.Fragment.Fragment_Playlist_List_BaiHat_;
 
 import java.util.ArrayList;
 
@@ -25,16 +24,20 @@ public class Activity_playlist_baihat extends AppCompatActivity {
     private TextView txtNamePlaylist;
     private Button btnPlayAll;
 
-    private SongPlaylistAdapter adapter;
 
     private PlayListService service;
     public static PlayList playList;
-    private ArrayList<BaiHat> baiHats;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_playlist_baihat);
+        try {
+            service = new PlayListService(getApplicationContext());
+        }catch (Exception e){
+            e.getMessage();
+        }
+
         playList = (PlayList) getIntent().getSerializableExtra(Consts.PLAY_LIST);
 
         txtNamePlaylist = findViewById(R.id.txtName_Playlist);
@@ -42,7 +45,7 @@ public class Activity_playlist_baihat extends AppCompatActivity {
         txtNamePlaylist.setText(playList.getTenPlayList());
 
         btnPlayAll = findViewById(R.id.btn_play_all);
-        loadFragment(new Fragment_Playlist_List_BaiHat_());
+        loadFragment(list_bai_hat_playlist.getInstance());
         btnPlayAll.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -78,11 +81,13 @@ public class Activity_playlist_baihat extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), Activity_trang_chu.class);
                 startActivity(intent);
+
             }
         });
+        getSupportActionBar().setTitle("");
     }
 
-    private void loadFragment(Fragment fragment){
+    public void loadFragment(Fragment fragment){
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.frame_container_playlist,fragment );
         transaction.addToBackStack(null);

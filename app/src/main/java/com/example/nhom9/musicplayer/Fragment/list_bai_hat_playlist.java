@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 
 import com.example.nhom9.musicplayer.Activity.Activity_play_nhac;
 import com.example.nhom9.musicplayer.Activity.Activity_playlist_baihat;
+import com.example.nhom9.musicplayer.Adapter.PlayListAdapter;
 import com.example.nhom9.musicplayer.Adapter.SongPlaylistAdapter;
 import com.example.nhom9.musicplayer.Common.Consts;
 import com.example.nhom9.musicplayer.DatabaseAccess.PlayListService;
@@ -29,8 +31,18 @@ import java.util.Objects;
 
 public class list_bai_hat_playlist extends Fragment {
 
-    private RecyclerView rclSongPlaylist;
-    private SongPlaylistAdapter adapter;
+    private static list_bai_hat_playlist Instance;
+    public list_bai_hat_playlist(){}
+    public static list_bai_hat_playlist getInstance(){
+        if(Instance == null)
+        {
+            Instance = new list_bai_hat_playlist();
+        }
+        return Instance;
+    }
+
+    public RecyclerView rclSongPlaylist;
+    public SongPlaylistAdapter adapter;
     private PlayListService service;
     private PlayList playList;
     private ArrayList<BaiHat> baiHats;
@@ -109,7 +121,8 @@ public class list_bai_hat_playlist extends Fragment {
             baiHats.clear();
             baiHats.addAll(service.getSongList(String.valueOf(playList.getIdPlayList())));
             adapter.notifyDataSetChanged();
-
+            rclSongPlaylist.setAdapter(adapter);
+            Fragment_PlayList.getInstance().recyclerView.setAdapter(Fragment_PlayList.getInstance().adapter);
         });
         confirmDelete.setNegativeButton("Hủy bỏ", (dialogInterface, i) -> dialogInterface.dismiss());
         confirmDelete.show();

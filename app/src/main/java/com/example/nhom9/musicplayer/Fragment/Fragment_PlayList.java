@@ -37,10 +37,21 @@ import java.util.Objects;
 
 
 public class Fragment_PlayList extends Fragment {
+    public static Fragment_PlayList getInstance(){
+        if(sInstance==null)
+        {
+            sInstance=new Fragment_PlayList();
+        }
+        return sInstance;
+    }
+    public Fragment_PlayList(){}
+    private static Fragment_PlayList sInstance;
+
+    public RecyclerView recyclerView;
     private EditText edtTitle;
     private TextInputLayout tilTitle;
     PlayListService service;
-    PlayListAdapter adapter;
+    public PlayListAdapter adapter;
     ArrayList<PlayList> playLists;
 
     @Override
@@ -48,7 +59,7 @@ public class Fragment_PlayList extends Fragment {
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment__play_list, container, false);
 
-        RecyclerView recyclerView = root.findViewById(R.id.rcl_playlist);
+        recyclerView = root.findViewById(R.id.rcl_playlist);
 
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
