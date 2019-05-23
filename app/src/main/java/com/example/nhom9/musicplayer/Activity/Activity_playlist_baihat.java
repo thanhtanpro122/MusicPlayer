@@ -1,11 +1,13 @@
 package com.example.nhom9.musicplayer.Activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -51,6 +53,7 @@ public class Activity_playlist_baihat extends AppCompatActivity {
         txtNamePlaylist.setText(playList.getTenPlayList());
 
         btnPlayAll = findViewById(R.id.btn_play_all);
+
         loadFragment(list_bai_hat_playlist.getInstance());
         btnPlayAll.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -86,11 +89,18 @@ public class Activity_playlist_baihat extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), Activity_trang_chu.class);
+                finish();
                 startActivity(intent);
-
             }
         });
         getSupportActionBar().setTitle("");
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(getApplicationContext(), Activity_trang_chu.class);
+        startActivity(intent);
+        super.onBackPressed();
     }
 
     public void loadFragment(Fragment fragment){
