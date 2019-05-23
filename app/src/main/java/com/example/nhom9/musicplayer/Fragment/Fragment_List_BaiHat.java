@@ -50,6 +50,7 @@ public class Fragment_List_BaiHat extends Fragment {
     private  ArrayList<PlayList> playLists;
     private PlayListService playlistService;
     PlayNhacAdapter adapter;
+    MediaPlayerService player;
 
 //    public static BaiHat selectedSong;
 
@@ -214,6 +215,10 @@ public class Fragment_List_BaiHat extends Fragment {
 
                 try{
                     playlistService.addPlaylist_BaiHat(playLists.get(item).getIdPlayList(),song.getIdBaiHat());
+                    if(Activity_play_nhac.binder!=null){
+                        player = Activity_play_nhac.binder.getService();
+                        player.updateListBaiHat(playlistService.getSongList(String.valueOf(playLists.get(item).getIdPlayList())));
+                    }
                     int count  = playlistService.getSongNumber(playLists.get(item).getIdPlayList());
                 }catch (Exception e){
                     Toast.makeText(getContext(),"Bạn đã có bài hát này trong playlist",Toast.LENGTH_SHORT).show();

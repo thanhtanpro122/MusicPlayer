@@ -126,7 +126,9 @@ public class Activity_play_nhac extends AppCompatActivity {
         super.onStart();
         setUpService();
         if(player!= null){
-            player.updateListBaiHat(currentPlayList);
+            if(player.updateListBaiHat(currentPlayList)){
+                indexBaiHat = player.setSongIndex(comingBaiHat.getIdBaiHat());
+            }
             if (!player.isCurrentSong(comingBaiHat)) {
                 indexBaiHat = player.setSongIndex(comingBaiHat.getIdBaiHat());
                 comingBaiHat = player.getCurrentBaiHat();
@@ -179,10 +181,14 @@ public class Activity_play_nhac extends AppCompatActivity {
                         return;
                     }
                     if(player!= null){
-                        player.updateListBaiHat(currentPlayList);
+
+//                        if(player.updateListBaiHat(currentPlayList)){
+//                            indexBaiHat = player.setSongIndex(comingBaiHat.getIdBaiHat());
+//                        }
                         if (!player.isCurrentSong(comingBaiHat)) {
                             indexBaiHat = player.setSongIndex(comingBaiHat.getIdBaiHat());
                             comingBaiHat = player.getCurrentBaiHat();
+                            setUpScreen();
                         }
                     }
 

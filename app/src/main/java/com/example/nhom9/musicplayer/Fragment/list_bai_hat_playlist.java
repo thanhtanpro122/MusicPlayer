@@ -24,6 +24,7 @@ import com.example.nhom9.musicplayer.DatabaseAccess.PlayListService;
 import com.example.nhom9.musicplayer.Model.BaiHat;
 import com.example.nhom9.musicplayer.Model.PlayList;
 import com.example.nhom9.musicplayer.R;
+import com.example.nhom9.musicplayer.Service.MediaPlayerService;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -118,9 +119,31 @@ public class list_bai_hat_playlist extends Fragment {
         confirmDelete.setTitle("Xóa bài hát khỏi Playlist");
         confirmDelete.setMessage("Bạn có chắc chắn muốn xóa bài hát: "+ baiHat.getTenBaiHat() + " ra khỏi '"+playList.getTenPlayList() +"' ? ");
         confirmDelete.setPositiveButton("yes", (dialogInterface, i) -> {
-            service.deleteSongFromPlaylist(playList.getIdPlayList(),baiHat.getIdBaiHat());
-            baiHats.clear();
-            baiHats.addAll(service.getSongList(String.valueOf(playList.getIdPlayList())));
+            if(Activity_play_nhac.binder != null){
+                MediaPlayerService player = Activity_play_nhac.binder.getService();
+                int index = baiHats.indexOf(baiHat);
+                service.deleteSongFromPlaylist(playList.getIdPlayList(),baiHat.getIdBaiHat());
+                baiHats.clear();
+                baiHats.addAll(service.getSongList(String.valueOf(playList.getIdPlayList())));
+                player.updateListBaiHat(baiHats);
+                if(index == player.getCurrentIndex()){
+                    if(index >= baiHats.size()){
+                        index = baiHats.size() - 1;
+                        player.setSongIndex(baiHats.get(index).getIdBaiHat());
+                    }else{
+                        player.setSongIndex(baiHats.get(index).getIdBaiHat());
+                    }
+
+                }
+
+            }else{
+                service.deleteSongFromPlaylist(playList.getIdPlayList(),baiHat.getIdBaiHat());
+                baiHats.clear();
+                baiHats.addAll(service.getSongList(String.valueOf(playList.getIdPlayList())));
+            }
+
+
+
             adapter.notifyDataSetChanged();
             rclSongPlaylist.setAdapter(adapter);
             Fragment_PlayList.getInstance().recyclerView.setAdapter(Fragment_PlayList.getInstance().adapter);

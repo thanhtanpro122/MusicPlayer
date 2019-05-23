@@ -830,10 +830,13 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnComplet
         initMediaPlayer();
     }
 
-    public void updateListBaiHat(ArrayList<BaiHat> listBaiHat){
+    public boolean updateListBaiHat(ArrayList<BaiHat> listBaiHat){
         if(this.listBaiHat != listBaiHat){
             this.listBaiHat = listBaiHat;
+            Activity_play_nhac.currentPlayList = listBaiHat;
+            return true;
         }
+        return false;
     }
 
 }
